@@ -20,7 +20,7 @@
                     <li>Konsultasikan langsung dengan teknisi</li>
                 </ul>
             </div>
-            <a href="{{ route('user.technicians.index') }}" class="inline-block bg-orange-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-orange-700">Cari Teknisi</a>
+            <a href="{{ route('technicians.index') }}" class="inline-block bg-orange-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-orange-700">Cari Teknisi</a>
         </div>
     @elseif($consultation->diagnosis)
         @php $d = $consultation->diagnosis; @endphp
@@ -111,7 +111,7 @@
                 {{-- Action Buttons --}}
                 <div class="grid grid-cols-2 gap-3 pt-2">
                     @if($repairability && $repairability['can_self_repair'] && $d->repairGuides->isNotEmpty())
-                        <a href="{{ route('user.repair-guides.show', $d->repairGuides->first()->id) }}"
+                        <a href="{{ route('repair-guides.show', $d->repairGuides->first()) }}"
                             class="flex items-center justify-center gap-2 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 text-sm">
                             📖 Lihat Panduan Repair
                         </a>
@@ -120,7 +120,7 @@
                             📖 Panduan Repair
                         </div>
                     @endif
-                    <a href="{{ route('user.technicians.index') }}" class="flex items-center justify-center gap-2 border-2 border-primary-600 text-primary-600 py-3 rounded-xl font-semibold hover:bg-primary-50 text-sm">
+                    <a href="{{ route('technicians.index') }}" class="flex items-center justify-center gap-2 border-2 border-primary-600 text-primary-600 py-3 rounded-xl font-semibold hover:bg-primary-50 text-sm">
                         🔧 Cari Teknisi
                     </a>
                 </div>

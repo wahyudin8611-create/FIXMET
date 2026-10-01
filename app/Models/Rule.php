@@ -6,16 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Rule extends Model
 {
-    protected $fillable = ['device_id', 'diagnosis_id', 'rule_code', 'confidence'];
+    protected $fillable = ['diagnosis_id', 'rule_code', 'confidence_weight'];
 
     protected function casts(): array
     {
-        return ['confidence' => 'decimal:2'];
-    }
-
-    public function device()
-    {
-        return $this->belongsTo(Device::class);
+        return ['confidence_weight' => 'decimal:2'];
     }
 
     public function diagnosis()

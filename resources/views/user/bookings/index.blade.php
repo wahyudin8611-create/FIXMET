@@ -18,7 +18,7 @@
         <div class="p-10 text-center">
             <div class="text-4xl mb-3">📅</div>
             <p class="text-gray-500">Belum ada booking</p>
-            <a href="{{ route('user.technicians.index') }}" class="inline-block mt-3 text-primary-600 font-medium text-sm hover:underline">Cari teknisi sekarang</a>
+            <a href="{{ route('technicians.index') }}" class="inline-block mt-3 text-primary-600 font-medium text-sm hover:underline">Cari teknisi sekarang</a>
         </div>
         @endforelse
     </div>

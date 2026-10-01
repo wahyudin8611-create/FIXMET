@@ -3,12 +3,12 @@
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-8">
     <div class="mb-6">
-        <a href="{{ route('user.dashboard') }}" class="text-sm text-gray-500 hover:text-primary-600">&larr; Kembali</a>
+        <a href="{{ auth()->user()?->isUser() ? route('user.dashboard') : route('home') }}" class="text-sm text-gray-500 hover:text-primary-600">&larr; Kembali</a>
         <h1 class="text-2xl font-bold mt-2">Mulai Diagnosis Kerusakan</h1>
         <p class="text-gray-500 text-sm mt-1">Upload foto kerusakan dan isi informasi perangkat Anda.</p>
     </div>
 
-    <form action="{{ route('user.diagnosis.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" id="diagnosisForm">
+    <form action="{{ route('diagnosis.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" id="diagnosisForm">
         @csrf
 
         {{-- Photo Upload --}}

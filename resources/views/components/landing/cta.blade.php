@@ -21,11 +21,11 @@
 
         <div class="reveal reveal-d1 flex flex-wrap justify-center gap-4">
             @auth
-            <a href="{{ route('user.diagnosis.create') }}" class="btn-pill btn-white text-base px-8 py-3.5 font-semibold">
+            <a href="{{ route('diagnosis.create') }}" class="btn-pill btn-white text-base px-8 py-3.5 font-semibold">
                 Mulai Diagnosis
             </a>
             @else
-            <a href="{{ route('register') }}" class="btn-pill btn-white text-base px-8 py-3.5 font-semibold">
+            <a href="{{ route('diagnosis.create') }}" class="btn-pill btn-white text-base px-8 py-3.5 font-semibold">
                 Mulai Diagnosis
             </a>
             @endauth

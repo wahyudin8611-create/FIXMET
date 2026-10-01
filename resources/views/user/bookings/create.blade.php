@@ -2,7 +2,7 @@
 @section('title', 'Buat Booking')
 @section('content')
 <div class="max-w-2xl mx-auto px-4 py-8">
-    <a href="{{ route('user.technicians.show', $technician->id) }}" class="text-sm text-gray-500 hover:text-primary-600 mb-4 inline-block">&larr; Kembali</a>
+    <a href="{{ route('technicians.show', $technician) }}" class="text-sm text-gray-500 hover:text-primary-600 mb-4 inline-block">&larr; Kembali</a>
     <h1 class="text-2xl font-bold mb-6">Buat Booking</h1>
 
     {{-- Technician Card --}}

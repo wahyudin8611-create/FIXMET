@@ -11,7 +11,7 @@
                     Diagnose. Repair. Connect.
                 </p>
                 <div class="flex gap-3">
-                    <a href="{{ route('register') }}" class="btn-pill btn-blue text-sm py-2 px-5">Mulai Diagnosis</a>
+                    <a href="{{ route('diagnosis.create') }}" class="btn-pill btn-blue text-sm py-2 px-5">Mulai Diagnosis</a>
                     <a href="{{ route('login') }}" class="btn-pill btn-outline text-sm py-2 px-5">Masuk</a>
                 </div>
             </div>

@@ -33,9 +33,9 @@
         {{-- CTAs --}}
         <div class="reveal reveal-d3 flex flex-wrap justify-center items-center gap-4 mb-20">
             @auth
-            <a href="{{ route('user.diagnosis.create') }}" class="btn-pill btn-blue text-base px-7 py-3">Mulai Diagnosis</a>
+            <a href="{{ route('diagnosis.create') }}" class="btn-pill btn-blue text-base px-7 py-3">Mulai Diagnosis</a>
             @else
-            <a href="{{ route('register') }}" class="btn-pill btn-blue text-base px-7 py-3">Mulai Diagnosis</a>
+            <a href="{{ route('diagnosis.create') }}" class="btn-pill btn-blue text-base px-7 py-3">Mulai Diagnosis</a>
             @endauth
             <a href="#cara-kerja" class="link-arrow text-base">Lihat cara kerja <span aria-hidden="true">›</span></a>
         </div>

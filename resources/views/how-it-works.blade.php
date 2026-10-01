@@ -47,7 +47,7 @@
     </div>
 
     <div class="text-center">
-        <a href="{{ route('user.diagnosis.create') }}" class="inline-block bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-primary-700">
+        <a href="{{ route('diagnosis.create') }}" class="inline-block bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-primary-700">
             Mulai Diagnosis Sekarang
         </a>
     </div>

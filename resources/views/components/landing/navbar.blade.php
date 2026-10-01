@@ -28,9 +28,9 @@
                     Masuk
                 </a>
                 @auth
-                <a href="{{ route('user.diagnosis.create') }}" class="btn-pill btn-blue text-sm py-2 px-5">Mulai Diagnosis</a>
+                <a href="{{ route('diagnosis.create') }}" class="btn-pill btn-blue text-sm py-2 px-5">Mulai Diagnosis</a>
                 @else
-                <a href="{{ route('register') }}" class="btn-pill btn-blue text-sm py-2 px-5">Mulai Diagnosis</a>
+                <a href="{{ route('diagnosis.create') }}" class="btn-pill btn-blue text-sm py-2 px-5">Mulai Diagnosis</a>
                 @endauth
             </div>
 
@@ -71,7 +71,7 @@
         </div>
         <div class="flex flex-col gap-2 pt-3 border-t border-black/[.06]">
             <a href="{{ route('login') }}" class="btn-pill btn-outline text-sm text-center">Masuk</a>
-            <a href="{{ route('register') }}" class="btn-pill btn-blue text-sm text-center">Mulai Diagnosis</a>
+            <a href="{{ route('diagnosis.create') }}" class="btn-pill btn-blue text-sm text-center">Mulai Diagnosis</a>
         </div>
     </div>
 </nav>

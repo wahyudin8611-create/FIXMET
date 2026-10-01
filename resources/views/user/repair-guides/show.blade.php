@@ -2,7 +2,7 @@
 @section('title', $repairGuide->title)
 @section('content')
 <div class="max-w-3xl mx-auto px-4 py-8">
-    <a href="{{ route('user.dashboard') }}" class="text-sm text-gray-500 hover:text-primary-600 mb-4 inline-block">&larr; Kembali</a>
+    <a href="{{ url()->previous(route('home')) }}" class="text-sm text-gray-500 hover:text-primary-600 mb-4 inline-block">&larr; Kembali</a>
 
     <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-6">
@@ -83,7 +83,7 @@
     </div>
 
     <div class="mt-4 text-center">
-        <a href="{{ route('user.technicians.index') }}" class="text-sm text-primary-600 hover:underline">Butuh bantuan? Cari teknisi →</a>
+        <a href="{{ route('technicians.index') }}" class="text-sm text-primary-600 hover:underline">Butuh bantuan? Cari teknisi →</a>
     </div>
 </div>
 @endsection

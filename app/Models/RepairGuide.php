@@ -8,7 +8,7 @@ class RepairGuide extends Model
 {
     protected $fillable = [
         'diagnosis_id', 'title', 'description', 'difficulty', 'estimated_time',
-        'risk_level', 'required_tools', 'safety_warning', 'do_not_do',
+        'cost_range', 'tools_needed', 'do_not_do',
     ];
 
     public function diagnosis()
@@ -21,9 +21,28 @@ class RepairGuide extends Model
         return $this->hasMany(RepairStep::class)->orderBy('step_number');
     }
 
+    /**
+     * The guide page reads tools, risk and safety warning under these names;
+     * they come from tools_needed and the related diagnosis.
+     */
+    public function getRequiredToolsAttribute(): ?string
+    {
+        return $this->tools_needed;
+    }
+
+    public function getRiskLevelAttribute(): ?string
+    {
+        return $this->diagnosis?->severity;
+    }
+
+    public function getSafetyWarningAttribute(): ?string
+    {
+        return $this->diagnosis?->danger_signs;
+    }
+
     public function getDifficultyLabelAttribute(): string
     {
-        return match($this->difficulty) {
+        return match ($this->difficulty) {
             'easy' => 'Mudah',
             'medium' => 'Sedang',
             'hard' => 'Sulit',

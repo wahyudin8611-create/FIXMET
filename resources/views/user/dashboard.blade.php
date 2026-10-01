@@ -7,7 +7,7 @@
             <h1 class="text-2xl font-bold text-gray-900">Selamat datang, {{ $user->name }}! 👋</h1>
             <p class="text-gray-500 text-sm mt-1">Perangkat ada masalah? Mulai diagnosis sekarang.</p>
         </div>
-        <a href="{{ route('user.diagnosis.create') }}" class="bg-primary-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-primary-700 flex items-center gap-2">
+        <a href="{{ route('diagnosis.create') }}" class="bg-primary-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-primary-700 flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Diagnosa Kerusakan
         </a>
@@ -38,7 +38,7 @@
             </div>
             <div class="divide-y">
                 @forelse($consultations as $c)
-                <a href="{{ route('user.diagnosis.result', $c->id) }}" class="flex items-center gap-3 p-4 hover:bg-gray-50">
+                <a href="{{ route('diagnosis.result', $c) }}" class="flex items-center gap-3 p-4 hover:bg-gray-50">
                     <div class="w-9 h-9 bg-blue-100 rounded-full flex items-center justify-center text-sm font-bold text-blue-700">
                         {{ strtoupper(substr($c->device->name ?? 'D', 0, 1)) }}
                     </div>

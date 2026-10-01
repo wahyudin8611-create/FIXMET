@@ -7,13 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Diagnosis extends Model
 {
     protected $fillable = [
-        'device_id', 'name', 'description', 'severity', 'repairability', 'requires_technician',
+        'device_id', 'code', 'name', 'description', 'severity', 'repairability',
+        'recommendation', 'danger_signs',
     ];
-
-    protected function casts(): array
-    {
-        return ['requires_technician' => 'boolean'];
-    }
 
     public function device()
     {
@@ -42,7 +38,7 @@ class Diagnosis extends Model
 
     public function getSeverityLabelAttribute(): string
     {
-        return match($this->severity) {
+        return match ($this->severity) {
             'low' => 'Rendah',
             'medium' => 'Sedang',
             'high' => 'Tinggi',
@@ -53,18 +49,27 @@ class Diagnosis extends Model
 
     public function getRepairabilityLabelAttribute(): string
     {
-        return match($this->repairability) {
+        return match ($this->repairability) {
             'self_repair' => 'Bisa Diperbaiki Sendiri',
             'guided_repair' => 'Bisa dengan Panduan',
-            'technician_required' => 'Perlu Teknisi',
+            'technician_required', 'professional_only' => 'Perlu Teknisi',
             'do_not_repair' => 'Jangan Diperbaiki Sendiri',
             default => '-',
         };
     }
 
+    /**
+     * Derived from the repairability and severity columns; there is no
+     * stored requires_technician column.
+     */
+    public function getRequiresTechnicianAttribute(): bool
+    {
+        return $this->repairability !== 'self_repair' || in_array($this->severity, ['high', 'critical']);
+    }
+
     public function getSeverityColorAttribute(): string
     {
-        return match($this->severity) {
+        return match ($this->severity) {
             'low' => 'green',
             'medium' => 'yellow',
             'high' => 'orange',

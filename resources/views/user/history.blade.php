@@ -16,7 +16,7 @@
             </div>
             <p class="text-gray-500 text-sm">Semua diagnosis dan konsultasi yang pernah Anda lakukan</p>
         </div>
-        <a href="{{ route('user.diagnosis.create') }}"
+        <a href="{{ route('diagnosis.create') }}"
            class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-white rounded-xl shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
            style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@
         </div>
         <h3 class="text-lg font-bold text-gray-900 mb-2">Belum ada riwayat konsultasi</h3>
         <p class="text-gray-500 text-sm mb-6 max-w-xs mx-auto">Mulai diagnosis perangkat Anda dan semua riwayat akan tersimpan di sini.</p>
-        <a href="{{ route('user.diagnosis.create') }}"
+        <a href="{{ route('diagnosis.create') }}"
            class="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-white rounded-xl"
            style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
             Mulai Diagnosis Pertama
@@ -117,10 +117,10 @@
                                 <div class="flex items-center gap-2 mt-1">
                                     <div class="flex-1 h-1.5 bg-blue-100 rounded-full overflow-hidden max-w-20">
                                         <div class="h-full rounded-full transition-all"
-                                             style="width: {{ round($consultation->confidence * 100) }}%; background: linear-gradient(90deg, #2563eb, #7c3aed);">
+                                             style="width: {{ round($consultation->confidence) }}%; background: linear-gradient(90deg, #2563eb, #7c3aed);">
                                         </div>
                                     </div>
-                                    <span class="text-xs font-bold text-blue-700">{{ round($consultation->confidence * 100) }}%</span>
+                                    <span class="text-xs font-bold text-blue-700">{{ round($consultation->confidence) }}%</span>
                                 </div>
                                 @endif
                             </div>
@@ -141,7 +141,7 @@
 
                     {{-- Actions --}}
                     <div class="flex items-center gap-2 mt-3">
-                        <a href="{{ route('user.diagnosis.show', $consultation) }}"
+                        <a href="{{ route('diagnosis.result', $consultation) }}"
                            class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
                             Lihat Detail
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -2,14 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Device;
-use App\Models\Rule;
 use App\Models\Diagnosis;
+use App\Models\Rule;
 use App\Models\Symptom;
+use Illuminate\Database\Eloquent\Collection;
 
 class ExpertSystemService
 {
-    public function getSymptoms(int $deviceId): \Illuminate\Database\Eloquent\Collection
+    public function getSymptoms(int $deviceId): Collection
     {
         return Symptom::where('device_id', $deviceId)->get();
     }
@@ -18,7 +18,7 @@ class ExpertSystemService
     {
         // answers: [symptom_id => bool]
         $rules = Rule::with(['ruleSymptoms.symptom', 'diagnosis'])
-            ->where('device_id', $deviceId)
+            ->whereHas('diagnosis', fn ($query) => $query->where('device_id', $deviceId))
             ->get();
 
         $results = [];
@@ -29,13 +29,14 @@ class ExpertSystemService
                 $results[] = [
                     'rule' => $rule,
                     'diagnosis' => $rule->diagnosis,
-                    'confidence' => round($rule->confidence * $matched, 2),
+                    // Percentage, the same scale as consultations.confidence
+                    'confidence' => round($rule->confidence_weight * $matched * 100, 2),
                     'matched_symptoms' => $this->getMatchedSymptoms($rule, $answers),
                 ];
             }
         }
 
-        usort($results, fn($a, $b) => $b['confidence'] <=> $a['confidence']);
+        usort($results, fn ($a, $b) => $b['confidence'] <=> $a['confidence']);
 
         return $results;
     }
@@ -43,7 +44,9 @@ class ExpertSystemService
     private function matchRule(Rule $rule, array $answers): float
     {
         $conditions = $rule->ruleSymptoms;
-        if ($conditions->isEmpty()) return 0;
+        if ($conditions->isEmpty()) {
+            return 0;
+        }
 
         $matched = 0;
         $total = $conditions->count();
@@ -68,15 +71,19 @@ class ExpertSystemService
         $matched = [];
         foreach ($rule->ruleSymptoms as $rs) {
             if (isset($answers[$rs->symptom_id])) {
-                $matched[] = $rs->symptom->name;
+                $matched[] = $rs->symptom->question;
             }
         }
+
         return $matched;
     }
 
     public function determineDiagnosis(array $results): ?array
     {
-        if (empty($results)) return null;
+        if (empty($results)) {
+            return null;
+        }
+
         return $results[0];
     }
 
@@ -87,7 +94,7 @@ class ExpertSystemService
             'severity' => $diagnosis->severity,
             'requires_technician' => $diagnosis->requires_technician,
             'can_self_repair' => in_array($diagnosis->repairability, ['self_repair', 'guided_repair'])
-                && !in_array($diagnosis->severity, ['high', 'critical']),
+                && ! in_array($diagnosis->severity, ['high', 'critical']),
         ];
     }
 }

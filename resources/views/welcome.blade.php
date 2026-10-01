@@ -84,7 +84,7 @@
                 <div class="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
                     @auth
                         @if(auth()->user()->isUser())
-                        <a href="{{ route('user.diagnosis.create') }}"
+                        <a href="{{ route('diagnosis.create') }}"
                            class="inline-flex items-center justify-center gap-2 px-7 py-4 font-bold text-white rounded-2xl text-base shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
                            style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -392,7 +392,7 @@
                         </svg>
                     </a>
                     @else
-                    <a href="{{ route('user.diagnosis.create') }}"
+                    <a href="{{ route('diagnosis.create') }}"
                        class="inline-flex items-center justify-center gap-2 px-8 py-4 font-bold text-white rounded-2xl text-base hover:-translate-y-0.5 transition-all shadow-xl hover:shadow-2xl"
                        style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
                         Mulai Diagnosis Sekarang

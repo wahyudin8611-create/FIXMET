@@ -2,7 +2,7 @@
 @section('title', $technician->user->name)
 @section('content')
 <div class="max-w-3xl mx-auto px-4 py-8">
-    <a href="{{ route('user.technicians.index') }}" class="text-sm text-gray-500 hover:text-primary-600 mb-4 inline-block">&larr; Kembali</a>
+    <a href="{{ route('technicians.index') }}" class="text-sm text-gray-500 hover:text-primary-600 mb-4 inline-block">&larr; Kembali</a>
 
     <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         <div class="p-6 border-b">

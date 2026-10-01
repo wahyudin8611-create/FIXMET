@@ -1,18 +1,26 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\LandingController;
-use App\Http\Controllers\User;
 use App\Http\Controllers\Technician;
-use App\Http\Controllers\Admin;
+use App\Http\Controllers\User;
+use Illuminate\Support\Facades\Route;
 
 // Public routes
 Route::get('/', [LandingController::class, 'index'])->name('home');
-Route::get('/about', fn() => view('about'))->name('about');
-Route::get('/how-it-works', fn() => view('how-it-works'))->name('how-it-works');
+Route::get('/about', fn () => view('about'))->name('about');
+Route::get('/how-it-works', fn () => view('how-it-works'))->name('how-it-works');
 Route::get('/technicians', [User\TechnicianController::class, 'index'])->name('technicians.index');
 Route::get('/technicians/{technician}', [User\TechnicianController::class, 'show'])->name('technicians.show');
+
+// Diagnosis tools — free to use without an account
+Route::get('/diagnosis', [User\ConsultationController::class, 'create'])->name('diagnosis.create');
+Route::post('/diagnosis', [User\ConsultationController::class, 'storeStep1'])->middleware('throttle:diagnosis')->name('diagnosis.store');
+Route::get('/diagnosis/{consultation:access_token}', [User\ConsultationController::class, 'result'])->name('diagnosis.result');
+Route::get('/diagnosis/{consultation:access_token}/questions', [User\ConsultationController::class, 'questions'])->name('diagnosis.questions');
+Route::post('/diagnosis/{consultation:access_token}/answers', [User\ConsultationController::class, 'processAnswers'])->name('diagnosis.answers');
+Route::get('/repair-guides/{repairGuide}', [User\RepairGuideController::class, 'show'])->name('repair-guides.show');
 
 // Auth routes
 Route::middleware('guest')->group(function () {
@@ -41,21 +49,8 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
     Route::put('/profile', [User\ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [User\ProfileController::class, 'changePassword'])->name('profile.password');
 
-    // Consultations / Diagnosis
+    // Saved diagnoses (the diagnosis tool itself is public)
     Route::get('/diagnosis', [User\ConsultationController::class, 'index'])->name('diagnosis.index');
-    Route::get('/diagnosis/create', [User\ConsultationController::class, 'create'])->name('diagnosis.create');
-    Route::post('/diagnosis', [User\ConsultationController::class, 'storeStep1'])->name('diagnosis.store');
-    Route::get('/diagnosis/{consultation}/questions', [User\ConsultationController::class, 'questions'])->name('diagnosis.questions');
-    Route::post('/diagnosis/{consultation}/answers', [User\ConsultationController::class, 'processAnswers'])->name('diagnosis.answers');
-    Route::get('/diagnosis/{consultation}', [User\ConsultationController::class, 'show'])->name('diagnosis.show');
-    Route::get('/diagnosis/{consultation}/result', [User\ConsultationController::class, 'result'])->name('diagnosis.result');
-
-    // Repair Guide
-    Route::get('/repair-guides/{repairGuide}', [User\RepairGuideController::class, 'show'])->name('repair-guides.show');
-
-    // Technicians
-    Route::get('/technicians', [User\TechnicianController::class, 'index'])->name('technicians.index');
-    Route::get('/technicians/{technician}', [User\TechnicianController::class, 'show'])->name('technicians.show');
 
     // Bookings
     Route::get('/bookings', [User\BookingController::class, 'index'])->name('bookings.index');
@@ -129,7 +124,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 // Redirect based on role after login
 Route::middleware('auth')->get('/redirect', function () {
-    return match(auth()->user()->role) {
+    return match (auth()->user()->role) {
         'admin' => redirect()->route('admin.dashboard'),
         'technician' => redirect()->route('technician.dashboard'),
         default => redirect()->route('user.dashboard'),

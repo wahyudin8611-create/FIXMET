@@ -161,7 +161,7 @@ $svgs = [
         </div>
 
         @php
-            $link = auth()->check() ? route('user.diagnosis.create') : route('register');
+            $link = route('diagnosis.create');
             $desktopSpan = [
                 0 => 'grid-column:span 2;grid-row:span 2;',
                 5 => 'grid-column:span 2;',

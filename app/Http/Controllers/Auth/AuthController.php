@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Technician;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -28,24 +28,24 @@ class AuthController extends Controller
     public function registerUser(Request $request)
     {
         $request->validate([
-            'name'     => ['required', 'string', 'max:255'],
-            'email'    => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'phone'    => ['nullable', 'string', 'max:20'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
-            'phone'    => $request->phone,
-            'role'     => 'user',
+            'phone' => $request->phone,
+            'role' => 'user',
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('user.dashboard')
-            ->with('success', 'Selamat datang di FIXMATE, ' . $user->name . '! Mulai diagnosis perangkat Anda.');
+        return redirect()->intended(route('user.dashboard'))
+            ->with('success', 'Selamat datang di FIXMATE, '.$user->name.'! Riwayat diagnosis Anda kini tersimpan di akun.');
     }
 
     // ── Technician Registration ─────────────────────────────────────────────
@@ -57,35 +57,35 @@ class AuthController extends Controller
     public function registerTechnician(Request $request)
     {
         $request->validate([
-            'name'             => ['required', 'string', 'max:255'],
-            'email'            => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'phone'            => ['required', 'string', 'max:20'],
-            'password'         => ['required', 'confirmed', Rules\Password::defaults()],
-            'specialization'   => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'phone' => ['required', 'string', 'max:20'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'specialization' => ['required', 'string', 'max:255'],
             'experience_years' => ['required', 'integer', 'min:0', 'max:50'],
-            'service_area'     => ['required', 'string', 'max:255'],
-            'service_fee'      => ['required', 'numeric', 'min:0'],
-            'description'      => ['nullable', 'string', 'max:1000'],
-            'identity_card'    => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
-            'certificate'      => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
-            'skill_evidence'   => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'service_area' => ['required', 'string', 'max:255'],
+            'service_fee' => ['required', 'numeric', 'min:0'],
+            'description' => ['nullable', 'string', 'max:1000'],
+            'identity_card' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'certificate' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+            'skill_evidence' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
-            'phone'    => $request->phone,
-            'role'     => 'user',
+            'phone' => $request->phone,
+            'role' => 'user',
         ]);
 
         $techData = [
-            'specialization'   => $request->specialization,
+            'specialization' => $request->specialization,
             'experience_years' => (int) $request->experience_years,
-            'service_area'     => $request->service_area,
-            'service_fee'      => $request->service_fee,
-            'description'      => $request->description,
-            'status'           => 'pending',
+            'service_area' => $request->service_area,
+            'service_fee' => $request->service_fee,
+            'description' => $request->description,
+            'status' => 'pending',
         ];
 
         foreach (['identity_card', 'certificate', 'skill_evidence'] as $field) {
@@ -111,18 +111,18 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => ['required', 'email'],
+            'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return match(Auth::user()->role) {
-                'admin'      => redirect()->route('admin.dashboard'),
-                'technician' => redirect()->route('technician.dashboard'),
-                default      => redirect()->route('user.dashboard'),
-            };
+            return redirect()->intended(match (Auth::user()->role) {
+                'admin' => route('admin.dashboard'),
+                'technician' => route('technician.dashboard'),
+                default => route('user.dashboard'),
+            });
         }
 
         return back()->withErrors(['email' => 'Email atau password tidak valid.'])->onlyInput('email');
@@ -133,6 +133,7 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect()->route('login');
     }
 
@@ -161,8 +162,8 @@ class AuthController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'token'    => ['required'],
-            'email'    => ['required', 'email'],
+            'token' => ['required'],
+            'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 

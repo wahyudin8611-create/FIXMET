@@ -6,11 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Solution extends Model
 {
-    protected $fillable = ['diagnosis_id', 'solution', 'requires_technician'];
+    protected $fillable = ['diagnosis_id', 'title', 'description', 'solution_type', 'order_number'];
 
-    protected function casts(): array
+    /**
+     * Single line of text the result page shows for this solution.
+     */
+    public function getSolutionAttribute(): string
     {
-        return ['requires_technician' => 'boolean'];
+        return $this->description ? "{$this->title}: {$this->description}" : $this->title;
     }
 
     public function diagnosis()

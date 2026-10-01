@@ -57,7 +57,7 @@
                 @else
                     {{-- Quick action button --}}
                     @if(auth()->user()->isUser())
-                    <a href="{{ route('user.diagnosis.create') }}"
+                    <a href="{{ route('diagnosis.create') }}"
                        class="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-white px-3.5 py-2 rounded-xl shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5"
                        style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,7 +154,7 @@
                                         </div>
                                         Dashboard
                                     </a>
-                                    <a href="{{ route('user.diagnosis.create') }}"
+                                    <a href="{{ route('diagnosis.create') }}"
                                        class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors group">
                                         <div class="w-7 h-7 rounded-lg bg-violet-50 flex items-center justify-center group-hover:bg-violet-100 transition-colors">
                                             <svg class="w-3.5 h-3.5 text-violet-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -7,10 +7,10 @@ use App\Models\Category;
 use App\Models\Consultation;
 use App\Models\ConsultationAnswer;
 use App\Models\ConsultationImage;
-use App\Models\Device;
 use App\Models\Symptom;
 use App\Services\ExpertSystemService;
 use App\Services\ImageAnalysisService;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -34,6 +34,7 @@ class ConsultationController extends Controller
     public function create()
     {
         $categories = Category::with('devices')->get();
+
         return view('user.consultation.create', compact('categories'));
     }
 
@@ -51,9 +52,9 @@ class ConsultationController extends Controller
         ]);
 
         $consultation = Consultation::create([
-            'user_id' => auth()->id(),
+            'user_id' => $request->user()?->isUser() ? $request->user()->id : null,
             'device_id' => $request->device_id,
-            'consultation_code' => 'CONS-' . strtoupper(Str::random(8)),
+            'consultation_code' => 'CONS-'.strtoupper(Str::random(8)),
             'device_brand' => $request->device_brand,
             'device_model' => $request->device_model,
             'device_age' => $request->device_age,
@@ -61,10 +62,16 @@ class ConsultationController extends Controller
             'status' => 'in_progress',
         ]);
 
+        if ($consultation->isGuest()) {
+            $request->session()->push(Consultation::GUEST_SESSION_KEY, $consultation->id);
+        }
+
         // Store images
         foreach ($request->file('images') as $image) {
             $errors = $this->imageAnalysis->validateImage($image);
-            if (!empty($errors)) continue;
+            if (! empty($errors)) {
+                continue;
+            }
 
             $path = $this->imageAnalysis->storeImage($image);
             ConsultationImage::create([
@@ -74,12 +81,12 @@ class ConsultationController extends Controller
             ]);
         }
 
-        return redirect()->route('user.diagnosis.questions', $consultation->id);
+        return redirect()->route('diagnosis.questions', $consultation);
     }
 
     public function questions(Consultation $consultation)
     {
-        $this->authorize('view', $consultation);
+        $this->authorizeConsultation('view', $consultation);
 
         $symptoms = Symptom::where('device_id', $consultation->device_id)->get();
 
@@ -88,13 +95,13 @@ class ConsultationController extends Controller
 
     public function processAnswers(Request $request, Consultation $consultation)
     {
-        $this->authorize('update', $consultation);
+        $this->authorizeConsultation('update', $consultation);
 
         $symptoms = Symptom::where('device_id', $consultation->device_id)->get();
 
         $answers = [];
         foreach ($symptoms as $symptom) {
-            $key = 'symptom_' . $symptom->id;
+            $key = 'symptom_'.$symptom->id;
             $answer = $request->has($key) ? (bool) $request->$key : false;
             $answers[$symptom->id] = $answer;
 
@@ -112,7 +119,7 @@ class ConsultationController extends Controller
             $consultation->update([
                 'diagnosis_id' => $primary['diagnosis']->id,
                 'confidence' => $primary['confidence'],
-                'all_diagnoses' => array_map(fn($r) => [
+                'all_diagnoses' => array_map(fn ($r) => [
                     'diagnosis_id' => $r['diagnosis']->id,
                     'name' => $r['diagnosis']->name,
                     'confidence' => $r['confidence'],
@@ -123,19 +130,12 @@ class ConsultationController extends Controller
             $consultation->update(['status' => 'no_diagnosis']);
         }
 
-        return redirect()->route('user.diagnosis.result', $consultation->id);
-    }
-
-    public function show(Consultation $consultation)
-    {
-        $this->authorize('view', $consultation);
-        $consultation->load('device.category', 'diagnosis.repairGuides.steps', 'diagnosis.solutions', 'images');
-        return view('user.consultation.show', compact('consultation'));
+        return redirect()->route('diagnosis.result', $consultation);
     }
 
     public function result(Consultation $consultation)
     {
-        $this->authorize('view', $consultation);
+        $this->authorizeConsultation('view', $consultation);
         $consultation->load('device.category', 'diagnosis.repairGuides', 'diagnosis.solutions', 'images', 'answers.symptom');
 
         $repairability = null;
@@ -154,5 +154,18 @@ class ConsultationController extends Controller
             ->paginate(15);
 
         return view('user.history', compact('consultations'));
+    }
+
+    /**
+     * Visitors opening a saved consultation are asked to sign in first and
+     * are brought back to it afterwards.
+     */
+    private function authorizeConsultation(string $ability, Consultation $consultation): void
+    {
+        if (! $consultation->isGuest() && auth()->guest()) {
+            throw new AuthenticationException;
+        }
+
+        $this->authorize($ability, $consultation);
     }
 }

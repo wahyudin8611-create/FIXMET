@@ -6,7 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Symptom extends Model
 {
-    protected $fillable = ['device_id', 'name', 'code', 'description'];
+    protected $fillable = ['device_id', 'code', 'question', 'description', 'weight'];
+
+    /**
+     * Views display a symptom by its question text.
+     */
+    public function getNameAttribute(): ?string
+    {
+        return $this->question;
+    }
 
     public function device()
     {

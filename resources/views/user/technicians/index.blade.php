@@ -25,7 +25,7 @@
             <div class="text-sm text-gray-600 mb-3">✅ {{ $t->completed_jobs }} pekerjaan selesai</div>
             <div class="flex items-center justify-between">
                 <span class="text-primary-600 font-semibold">Rp{{ number_format($t->service_fee, 0, ',', '.') }}</span>
-                <a href="{{ route('user.technicians.show', $t->id) }}" class="bg-primary-600 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-primary-700">Lihat</a>
+                <a href="{{ route('technicians.show', $t) }}" class="bg-primary-600 text-white text-sm px-4 py-1.5 rounded-lg hover:bg-primary-700">Lihat</a>
             </div>
         </div>
         @empty
