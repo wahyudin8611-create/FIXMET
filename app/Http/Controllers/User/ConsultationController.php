@@ -1,0 +1,158 @@
+<?php
+
+namespace App\Http\Controllers\User;
+
+use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Consultation;
+use App\Models\ConsultationAnswer;
+use App\Models\ConsultationImage;
+use App\Models\Device;
+use App\Models\Symptom;
+use App\Services\ExpertSystemService;
+use App\Services\ImageAnalysisService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+
+class ConsultationController extends Controller
+{
+    public function __construct(
+        private ExpertSystemService $expertSystem,
+        private ImageAnalysisService $imageAnalysis,
+    ) {}
+
+    public function index()
+    {
+        $consultations = auth()->user()->consultations()
+            ->with('device.category', 'diagnosis')
+            ->latest()
+            ->paginate(10);
+
+        return view('user.consultation.index', compact('consultations'));
+    }
+
+    public function create()
+    {
+        $categories = Category::with('devices')->get();
+        return view('user.consultation.create', compact('categories'));
+    }
+
+    public function storeStep1(Request $request)
+    {
+        $request->validate([
+            'category_id' => ['required', 'exists:categories,id'],
+            'device_id' => ['required', 'exists:devices,id'],
+            'device_brand' => ['nullable', 'string', 'max:100'],
+            'device_model' => ['nullable', 'string', 'max:100'],
+            'device_age' => ['nullable', 'integer', 'min:0'],
+            'initial_complaint' => ['required', 'string', 'max:1000'],
+            'images' => ['required', 'array', 'min:1', 'max:5'],
+            'images.*' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        $consultation = Consultation::create([
+            'user_id' => auth()->id(),
+            'device_id' => $request->device_id,
+            'consultation_code' => 'CONS-' . strtoupper(Str::random(8)),
+            'device_brand' => $request->device_brand,
+            'device_model' => $request->device_model,
+            'device_age' => $request->device_age,
+            'initial_complaint' => $request->initial_complaint,
+            'status' => 'in_progress',
+        ]);
+
+        // Store images
+        foreach ($request->file('images') as $image) {
+            $errors = $this->imageAnalysis->validateImage($image);
+            if (!empty($errors)) continue;
+
+            $path = $this->imageAnalysis->storeImage($image);
+            ConsultationImage::create([
+                'consultation_id' => $consultation->id,
+                'image_path' => $path,
+                'created_at' => now(),
+            ]);
+        }
+
+        return redirect()->route('user.diagnosis.questions', $consultation->id);
+    }
+
+    public function questions(Consultation $consultation)
+    {
+        $this->authorize('view', $consultation);
+
+        $symptoms = Symptom::where('device_id', $consultation->device_id)->get();
+
+        return view('user.consultation.questions', compact('consultation', 'symptoms'));
+    }
+
+    public function processAnswers(Request $request, Consultation $consultation)
+    {
+        $this->authorize('update', $consultation);
+
+        $symptoms = Symptom::where('device_id', $consultation->device_id)->get();
+
+        $answers = [];
+        foreach ($symptoms as $symptom) {
+            $key = 'symptom_' . $symptom->id;
+            $answer = $request->has($key) ? (bool) $request->$key : false;
+            $answers[$symptom->id] = $answer;
+
+            ConsultationAnswer::updateOrCreate(
+                ['consultation_id' => $consultation->id, 'symptom_id' => $symptom->id],
+                ['answer' => $answer, 'created_at' => now()]
+            );
+        }
+
+        // Run Expert System
+        $results = $this->expertSystem->processAnswers($consultation->device_id, $answers);
+        $primary = $this->expertSystem->determineDiagnosis($results);
+
+        if ($primary && $primary['confidence'] >= 40) {
+            $consultation->update([
+                'diagnosis_id' => $primary['diagnosis']->id,
+                'confidence' => $primary['confidence'],
+                'all_diagnoses' => array_map(fn($r) => [
+                    'diagnosis_id' => $r['diagnosis']->id,
+                    'name' => $r['diagnosis']->name,
+                    'confidence' => $r['confidence'],
+                ], $results),
+                'status' => 'completed',
+            ]);
+        } else {
+            $consultation->update(['status' => 'no_diagnosis']);
+        }
+
+        return redirect()->route('user.diagnosis.result', $consultation->id);
+    }
+
+    public function show(Consultation $consultation)
+    {
+        $this->authorize('view', $consultation);
+        $consultation->load('device.category', 'diagnosis.repairGuides.steps', 'diagnosis.solutions', 'images');
+        return view('user.consultation.show', compact('consultation'));
+    }
+
+    public function result(Consultation $consultation)
+    {
+        $this->authorize('view', $consultation);
+        $consultation->load('device.category', 'diagnosis.repairGuides', 'diagnosis.solutions', 'images', 'answers.symptom');
+
+        $repairability = null;
+        if ($consultation->diagnosis) {
+            $repairability = $this->expertSystem->getRepairability($consultation->diagnosis);
+        }
+
+        return view('user.consultation.result', compact('consultation', 'repairability'));
+    }
+
+    public function history()
+    {
+        $consultations = auth()->user()->consultations()
+            ->with('device', 'diagnosis', 'booking')
+            ->latest()
+            ->paginate(15);
+
+        return view('user.history', compact('consultations'));
+    }
+}

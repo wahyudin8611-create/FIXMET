@@ -1,0 +1,81 @@
+<footer class="border-t border-gray-100 bg-gray-900 text-gray-400 mt-20">
+    <div class="max-w-7xl mx-auto px-6 py-14">
+        <div class="grid md:grid-cols-4 gap-10 mb-12">
+
+            {{-- Brand --}}
+            <div class="md:col-span-2">
+                <div class="flex items-center gap-2.5 mb-4">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center"
+                         style="background: linear-gradient(135deg, #3b82f6, #7c3aed);">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                    </div>
+                    <span class="font-extrabold text-xl text-white tracking-tight">FIXMATE</span>
+                </div>
+                <p class="text-gray-400 text-sm leading-relaxed max-w-xs mb-5">
+                    Platform cerdas untuk diagnosa kerusakan elektronik berbasis AI dan menghubungkan pengguna dengan teknisi profesional terdekat.
+                </p>
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium" style="background: rgba(37,99,235,0.15); color: #93c5fd;">
+                        <div class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></div>
+                        Sistem Aktif 24/7
+                    </div>
+                </div>
+            </div>
+
+            {{-- Links --}}
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Platform</h4>
+                <ul class="space-y-3">
+                    @foreach([
+                        ['Cara Kerja', 'how-it-works'],
+                        ['Teknisi Kami', 'technicians.index'],
+                        ['Tentang Kami', 'about'],
+                    ] as [$label, $route])
+                    <li>
+                        <a href="{{ route($route) }}" class="text-sm text-gray-500 hover:text-gray-200 transition-colors hover:translate-x-0.5 inline-block">
+                            {{ $label }}
+                        </a>
+                    </li>
+                    @endforeach
+                </ul>
+            </div>
+
+            {{-- CTA --}}
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Mulai Sekarang</h4>
+                <div class="space-y-3">
+                    <a href="{{ route('register') }}"
+                       class="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-bold text-white rounded-xl transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-900/30"
+                       style="background: linear-gradient(135deg, #2563eb, #7c3aed);">
+                        Daftar Gratis
+                    </a>
+                    <a href="{{ route('login') }}"
+                       class="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-semibold text-gray-300 rounded-xl border border-gray-700 hover:border-gray-500 hover:text-white transition-all">
+                        Masuk Akun
+                    </a>
+                </div>
+                <div class="mt-4 p-3 rounded-xl" style="background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);">
+                    <p class="text-xs text-gray-500">🔒 Data Anda aman & terenkripsi</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Divider + bottom --}}
+        <div class="pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-xs text-gray-600">
+                © {{ date('Y') }} FIXMATE · Dibuat dengan ❤️ di Indonesia
+            </p>
+            <div class="flex items-center gap-4">
+                <span class="text-xs text-gray-600">Teknologi Indonesia</span>
+                <div class="flex items-center gap-1.5">
+                    <div class="w-4 h-4 rounded-full" style="background: linear-gradient(135deg, #3b82f6, #7c3aed);"></div>
+                    <span class="text-xs text-gray-600">AI-Powered</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
