@@ -22,7 +22,7 @@
                 @if($booking->status === 'accepted')
                 <form action="{{ route('technician.bookings.start', $booking->id) }}" method="POST">
                     @csrf @method('PATCH')
-                    <button type="submit" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700">Mulai Kerjakan</button>
+                    <button type="submit" class="bg-fm-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-fm-primary-dark">Mulai Kerjakan</button>
                 </form>
                 @elseif($booking->status === 'in_progress')
                 <a href="{{ route('technician.repair-reports.create', $booking->id) }}"

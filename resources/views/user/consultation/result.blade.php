@@ -27,16 +27,16 @@
 
         {{-- Main Result Card --}}
         <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-5">
-            <div class="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-6">
+            <div class="bg-gradient-to-r from-fm-primary to-fm-primary-dark text-white p-6">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-primary-200 text-sm font-medium uppercase tracking-wide">Hasil Diagnosis</p>
+                        <p class="text-emerald-200 text-sm font-medium uppercase tracking-wide">Hasil Diagnosis</p>
                         <h2 class="text-2xl font-bold mt-1">{{ $d->name }}</h2>
-                        <p class="text-primary-200 text-sm mt-1">{{ $consultation->device->name }} — {{ $consultation->consultation_code }}</p>
+                        <p class="text-emerald-200 text-sm mt-1">{{ $consultation->device->name }} — {{ $consultation->consultation_code }}</p>
                     </div>
                     <div class="text-right">
                         <div class="text-3xl font-bold">{{ number_format($consultation->confidence, 0) }}%</div>
-                        <div class="text-primary-200 text-xs">Tingkat kecocokan</div>
+                        <div class="text-emerald-200 text-xs">Tingkat kecocokan</div>
                     </div>
                 </div>
             </div>
@@ -112,7 +112,7 @@
                 <div class="grid grid-cols-2 gap-3 pt-2">
                     @if($repairability && $repairability['can_self_repair'] && $d->repairGuides->isNotEmpty())
                         <a href="{{ route('repair-guides.show', $d->repairGuides->first()) }}"
-                            class="flex items-center justify-center gap-2 bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 text-sm">
+                            class="flex items-center justify-center gap-2 bg-fm-primary text-white py-3 rounded-xl font-semibold hover:bg-fm-primary-dark text-sm">
                             📖 Lihat Panduan Repair
                         </a>
                     @else
@@ -120,7 +120,7 @@
                             📖 Panduan Repair
                         </div>
                     @endif
-                    <a href="{{ route('technicians.index') }}" class="flex items-center justify-center gap-2 border-2 border-primary-600 text-primary-600 py-3 rounded-xl font-semibold hover:bg-primary-50 text-sm">
+                    <a href="{{ route('technicians.index') }}" class="flex items-center justify-center gap-2 border-2 border-fm-primary text-fm-primary py-3 rounded-xl font-semibold hover:bg-fm-primary/5 text-sm">
                         🔧 Cari Teknisi
                     </a>
                 </div>
@@ -149,7 +149,7 @@
                     <span class="text-sm text-gray-700">{{ $altD['name'] }}</span>
                     <div class="flex items-center gap-2">
                         <div class="w-24 bg-gray-200 rounded-full h-1.5">
-                            <div class="bg-primary-500 h-1.5 rounded-full" style="width: {{ $altD['confidence'] }}%"></div>
+                            <div class="bg-fm-primary h-1.5 rounded-full" style="width: {{ $altD['confidence'] }}%"></div>
                         </div>
                         <span class="text-sm font-medium text-gray-600 w-10 text-right">{{ number_format($altD['confidence'], 0) }}%</span>
                     </div>
