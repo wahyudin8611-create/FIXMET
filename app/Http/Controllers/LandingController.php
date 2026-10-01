@@ -22,7 +22,7 @@ class LandingController extends Controller
         $features = [
             [
                 'label'    => 'Diagnosis dari foto',
-                'title'    => 'Unggah foto, biarkan AI membaca kerusakannya.',
+                'title'    => 'Unggah foto, biarkan sistem membaca kerusakannya.',
                 'body'     => 'Sistem kami menganalisis bukti visual seperti retak, gosong, karat, atau kebocoran dari foto yang kamu kirim. Hasilnya bukan vonis — melainkan kemungkinan kerusakan dengan tingkat kecocokan yang transparan.',
                 'note'     => 'Hasil adalah kemungkinan berdasarkan foto, bukan kepastian teknis.',
                 'bg'       => 'white',
@@ -31,7 +31,7 @@ class LandingController extends Controller
             [
                 'label'    => 'Sistem pakar yang transparan',
                 'title'    => 'Bukan kotak hitam. Setiap diagnosis punya alasan.',
-                'body'     => 'FIXMATE menggunakan forward chaining — mencocokkan gejala dengan aturan diagnosis satu per satu. Setiap hasil dilengkapi tombol "Mengapa?" yang menampilkan jalur logika yang diambil sistem.',
+                'body'     => 'FIXMET menggunakan forward chaining — mencocokkan gejala dengan aturan diagnosis satu per satu. Setiap hasil dilengkapi tombol "Mengapa?" yang menampilkan jalur logika yang diambil sistem.',
                 'note'     => 'Confidence score adalah tingkat kecocokan gejala, bukan jaminan kebenaran.',
                 'bg'       => 'gray',
                 'flip'     => true,

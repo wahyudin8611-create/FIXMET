@@ -45,7 +45,7 @@ class AuthController extends Controller
         Auth::login($user);
 
         return redirect()->route('user.dashboard')
-            ->with('success', 'Selamat datang di FIXMATE, ' . $user->name . '! Mulai diagnosis perangkat Anda.');
+            ->with('success', 'Selamat datang di FIXMET, ' . $user->name . '! Mulai diagnosis perangkat Anda.');
     }
 
     // ── Technician Registration ─────────────────────────────────────────────

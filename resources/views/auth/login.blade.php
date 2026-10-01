@@ -1,19 +1,19 @@
 @extends('layouts.auth')
-@section('title', 'Masuk ke FIXMATE')
+@section('title', 'Masuk ke FIXMET')
 @section('content')
 <div class="min-h-screen flex" x-data="{ showPass: false }">
 
     {{-- ── LEFT PANEL: dark brand panel ── --}}
     <div class="hidden lg:flex lg:w-[42%] xl:w-[45%] relative overflow-hidden flex-col justify-between p-12"
-         style="background: linear-gradient(145deg, #0a0f1e 0%, #0d1a40 50%, #150d38 100%);">
+         style="background: linear-gradient(145deg, #0f1f1b 0%, #162e27 50%, #1A2332 100%);">
 
         {{-- Floating blobs --}}
         <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full opacity-20"
-             style="background: radial-gradient(circle, #3b82f6, transparent 70%);"></div>
+             style="background: radial-gradient(circle, #3D8B7A, transparent 70%);"></div>
         <div class="absolute bottom-0 -left-20 w-80 h-80 rounded-full opacity-15"
-             style="background: radial-gradient(circle, #7c3aed, transparent 70%);"></div>
+             style="background: radial-gradient(circle, #E2B85B, transparent 70%);"></div>
         <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-10"
-             style="background: radial-gradient(circle, #2563eb, transparent 60%);"></div>
+             style="background: radial-gradient(circle, #3D8B7A, transparent 60%);"></div>
 
         {{-- Grid dots decoration --}}
         <div class="absolute inset-0 opacity-[0.04]"
@@ -22,15 +22,15 @@
         {{-- Logo --}}
         <div class="relative z-10">
             <a href="{{ route('home') }}" class="inline-flex items-center gap-3 group">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30"
-                     style="background: linear-gradient(135deg, #3b82f6, #7c3aed);">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center shadow-lg"
+                     style="background: #3D8B7A; box-shadow: 0 8px 20px rgba(61,139,122,0.3);">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
                 </div>
-                <span class="text-white font-bold text-xl tracking-tight group-hover:text-blue-300 transition-colors">FIXMATE</span>
+                <span class="text-white font-bold text-xl tracking-tight group-hover:text-emerald-300 transition-colors">FIXMET</span>
             </a>
         </div>
 
@@ -39,21 +39,21 @@
             <div class="mb-8">
                 <h1 class="text-5xl xl:text-6xl font-extrabold text-white leading-none mb-4 tracking-tight">
                     Diagnose.<br>
-                    <span style="background: linear-gradient(90deg, #60a5fa, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                    <span style="background: linear-gradient(90deg, #5BA897, #E2B85B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                         Repair.
                     </span><br>
                     Connect.
                 </h1>
                 <p class="text-slate-400 text-lg leading-relaxed max-w-xs">
-                    Platform cerdas untuk diagnosa kerusakan elektronik berbasis sistem pakar AI.
+                    Platform cerdas untuk diagnosa kerusakan elektronik berbasis sistem pakar.
                 </p>
             </div>
 
             {{-- Feature pills --}}
             <div class="space-y-3">
                 @foreach([
-                    ['🤖', 'AI Expert System', 'Forward chaining + confidence score'],
-                    ['🔧', 'Teknisi Terverifikasi', 'Ribuan teknisi profesional di seluruh Indonesia'],
+                    ['🔧', 'Sistem Pakar', 'Forward chaining + confidence score'],
+                    ['👨‍🔧', 'Teknisi Terverifikasi', 'Ribuan teknisi profesional di seluruh Indonesia'],
                     ['📖', 'Panduan Perbaikan', 'Ribuan panduan step-by-step untuk DIY'],
                 ] as [$icon, $title, $sub])
                 <div class="flex items-center gap-3 p-3 rounded-xl"
@@ -70,7 +70,7 @@
 
         {{-- Footer --}}
         <div class="relative z-10">
-            <p class="text-slate-700 text-xs">© 2024 FIXMATE · Teknologi Indonesia</p>
+            <p class="text-slate-700 text-xs">&copy; 2024 FIXMET &middot; Teknologi Indonesia</p>
         </div>
     </div>
 
@@ -81,22 +81,21 @@
             {{-- Mobile logo --}}
             <div class="lg:hidden mb-8 text-center">
                 <a href="{{ route('home') }}" class="inline-flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-lg flex items-center justify-center"
-                         style="background: linear-gradient(135deg, #3b82f6, #7c3aed);">
+                    <div class="w-8 h-8 rounded-lg flex items-center justify-center bg-fm-primary">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                     </div>
-                    <span class="font-bold text-gray-900">FIXMATE</span>
+                    <span class="font-bold text-gray-900">FIXMET</span>
                 </a>
             </div>
 
             {{-- Heading --}}
             <div class="mb-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-1">Selamat datang kembali</h2>
-                <p class="text-gray-500 text-sm">Masuk ke akun FIXMATE Anda untuk melanjutkan</p>
+                <p class="text-gray-500 text-sm">Masuk ke akun FIXMET Anda untuk melanjutkan</p>
             </div>
 
             {{-- Errors --}}
@@ -116,8 +115,8 @@
             @endif
 
             @if(session('info'))
-            <div class="mb-5 p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                <p class="text-blue-700 text-sm font-medium">{{ session('info') }}</p>
+            <div class="mb-5 p-4 bg-fm-primary/5 border border-fm-primary/10 rounded-xl">
+                <p class="text-fm-primary text-sm font-medium">{{ session('info') }}</p>
             </div>
             @endif
 
@@ -146,7 +145,7 @@
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-sm font-semibold text-gray-700">Password</label>
                         <a href="{{ route('password.request') }}"
-                           class="text-xs font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                           class="text-xs font-medium text-fm-primary hover:text-fm-primary-dark hover:underline">
                             Lupa password?
                         </a>
                     </div>
@@ -177,7 +176,7 @@
                 <label class="flex items-center gap-2.5 cursor-pointer group">
                     <div class="relative">
                         <input type="checkbox" name="remember" id="remember" class="sr-only peer">
-                        <div class="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-blue-600 peer-checked:border-blue-600 transition-all group-hover:border-blue-400 cursor-pointer flex items-center justify-center">
+                        <div class="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-fm-primary peer-checked:border-fm-primary transition-all group-hover:border-fm-primary-light cursor-pointer flex items-center justify-center">
                             <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                             </svg>
@@ -187,7 +186,7 @@
                 </label>
 
                 {{-- Submit --}}
-                <button type="submit" class="btn-primary w-full py-3.5 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/20">
+                <button type="submit" class="btn-primary w-full py-3.5 text-white font-semibold rounded-xl shadow-lg" style="box-shadow: 0 8px 20px rgba(61,139,122,0.2);">
                     Masuk ke Akun
                 </button>
             </form>

@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
     {
         // ── Admin User ───────────────────────────────────────────────
         $admin = User::create([
-            'name' => 'Admin FIXMATE',
-            'email' => 'admin@fixmate.id',
+            'name' => 'Admin FIXMET',
+            'email' => 'admin@fixmet.id',
             'password' => Hash::make('admin123'),
             'role' => 'admin',
             'phone' => '081200000000',
@@ -43,7 +43,7 @@ class DatabaseSeeder extends Seeder
 
         $techUser1 = User::create([
             'name' => 'Ahmad Teknisi',
-            'email' => 'ahmad@fixmate.id',
+            'email' => 'ahmad@fixmet.id',
             'password' => Hash::make('password'),
             'role' => 'technician',
             'phone' => '085678901234',
@@ -52,7 +52,7 @@ class DatabaseSeeder extends Seeder
 
         $techUser2 = User::create([
             'name' => 'Sari Perbaikan',
-            'email' => 'sari@fixmate.id',
+            'email' => 'sari@fixmet.id',
             'password' => Hash::make('password'),
             'role' => 'technician',
             'phone' => '087890123456',
