@@ -14,31 +14,109 @@ class ExpertSystemService
         return Symptom::where('device_id', $deviceId)->get();
     }
 
-    public function processAnswers(int $deviceId, array $answers): array
+    /**
+     * Largest relative change the photo evidence may apply to a rule's score.
+     */
+    private const MAX_VISUAL_ADJUSTMENT = 0.25;
+
+    /**
+     * Forward chaining over the user's answers. When AI photo evidence is
+     * available, each matched rule's score is raised when the photos show its
+     * symptoms and lowered when they show the opposite.
+     *
+     * @param  array<int, bool>  $answers  symptom_id => answer
+     * @param  array<string, mixed>|null  $visualEvidence  output of ImageAnalysisService::analyzeConsultation()
+     */
+    public function processAnswers(int $deviceId, array $answers, ?array $visualEvidence = null): array
     {
-        // answers: [symptom_id => bool]
         $rules = Rule::with(['ruleSymptoms.symptom', 'diagnosis'])
             ->whereHas('diagnosis', fn ($query) => $query->where('device_id', $deviceId))
             ->get();
 
+        $visualAssessments = $this->usableVisualAssessments($visualEvidence);
         $results = [];
 
         foreach ($rules as $rule) {
             $matched = $this->matchRule($rule, $answers);
             if ($matched > 0) {
-                $results[] = [
+                // Percentage, the same scale as consultations.confidence
+                $confidence = round($rule->confidence_weight * $matched * 100, 2);
+                $result = [
                     'rule' => $rule,
                     'diagnosis' => $rule->diagnosis,
-                    // Percentage, the same scale as consultations.confidence
-                    'confidence' => round($rule->confidence_weight * $matched * 100, 2),
+                    'confidence' => $confidence,
                     'matched_symptoms' => $this->getMatchedSymptoms($rule, $answers),
                 ];
+
+                if ($visualAssessments !== []) {
+                    $support = $this->visualSupport($rule, $visualAssessments);
+                    $result['base_confidence'] = $confidence;
+                    $result['visual_support'] = $support;
+                    $result['confidence'] = round(min(100, max(0, $confidence * (1 + self::MAX_VISUAL_ADJUSTMENT * $support))), 2);
+                }
+
+                $results[] = $result;
             }
         }
 
         usort($results, fn ($a, $b) => $b['confidence'] <=> $a['confidence']);
 
-        return $results;
+        // A diagnosis can be reached by several rules; keep only its best-scoring match
+        $bestPerDiagnosis = [];
+        foreach ($results as $result) {
+            $bestPerDiagnosis[$result['diagnosis']->id] ??= $result;
+        }
+
+        return array_values($bestPerDiagnosis);
+    }
+
+    /**
+     * Assessments from photos the AI judged clear enough, keyed by symptom id.
+     *
+     * @param  array<string, mixed>|null  $visualEvidence
+     * @return array<int, array{assessment: string, confidence: float}>
+     */
+    private function usableVisualAssessments(?array $visualEvidence): array
+    {
+        if (($visualEvidence['image_quality'] ?? null) !== 'clear') {
+            return [];
+        }
+
+        $assessments = [];
+        foreach ($visualEvidence['symptoms'] ?? [] as $item) {
+            $assessments[(int) $item['symptom_id']] = [
+                'assessment' => $item['assessment'],
+                'confidence' => (float) $item['confidence'],
+            ];
+        }
+
+        return $assessments;
+    }
+
+    /**
+     * How strongly the photos agree with the rule's conditions, from -1
+     * (photos contradict every condition) to 1 (photos confirm every one).
+     * Symptoms that cannot be seen in a photo count as neutral.
+     *
+     * @param  array<int, array{assessment: string, confidence: float}>  $visualAssessments
+     */
+    private function visualSupport(Rule $rule, array $visualAssessments): float
+    {
+        $conditions = $rule->ruleSymptoms;
+        $total = 0.0;
+
+        foreach ($conditions as $condition) {
+            $visual = $visualAssessments[$condition->symptom_id] ?? null;
+            if ($visual === null || $visual['assessment'] === 'not_determinable') {
+                continue;
+            }
+
+            $photoShowsSymptom = $visual['assessment'] === 'visible';
+            $agrees = $photoShowsSymptom === $condition->expected_answer;
+            $total += $agrees ? $visual['confidence'] : -$visual['confidence'];
+        }
+
+        return round($total / $conditions->count(), 2);
     }
 
     private function matchRule(Rule $rule, array $answers): float

@@ -13,6 +13,7 @@ use App\Services\ImageAnalysisService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class ConsultationController extends Controller
 {
@@ -42,14 +43,21 @@ class ConsultationController extends Controller
     {
         $request->validate([
             'category_id' => ['required', 'exists:categories,id'],
-            'device_id' => ['required', 'exists:devices,id'],
+            'device_id' => ['required', Rule::exists('devices', 'id')->where('category_id', $request->integer('category_id'))],
             'device_brand' => ['nullable', 'string', 'max:100'],
             'device_model' => ['nullable', 'string', 'max:100'],
-            'device_age' => ['nullable', 'integer', 'min:0'],
+            'device_age' => ['nullable', 'integer', 'min:0', 'max:50'],
             'initial_complaint' => ['required', 'string', 'max:1000'],
             'images' => ['required', 'array', 'min:1', 'max:5'],
             'images.*' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
+
+        foreach ($request->file('images') as $image) {
+            $errors = $this->imageAnalysis->validateImage($image);
+            if ($errors !== []) {
+                return back()->withErrors(['images' => $errors[0]])->withInput();
+            }
+        }
 
         $consultation = Consultation::create([
             'user_id' => $request->user()?->isUser() ? $request->user()->id : null,
@@ -66,19 +74,18 @@ class ConsultationController extends Controller
             $request->session()->push(Consultation::GUEST_SESSION_KEY, $consultation->id);
         }
 
-        // Store images
         foreach ($request->file('images') as $image) {
-            $errors = $this->imageAnalysis->validateImage($image);
-            if (! empty($errors)) {
-                continue;
-            }
-
             $path = $this->imageAnalysis->storeImage($image);
             ConsultationImage::create([
                 'consultation_id' => $consultation->id,
                 'image_path' => $path,
                 'created_at' => now(),
             ]);
+        }
+
+        $visualEvidence = $this->imageAnalysis->analyzeConsultation($consultation);
+        if ($visualEvidence !== null) {
+            $consultation->update(['visual_evidence' => $visualEvidence]);
         }
 
         return redirect()->route('diagnosis.questions', $consultation);
@@ -112,7 +119,7 @@ class ConsultationController extends Controller
         }
 
         // Run Expert System
-        $results = $this->expertSystem->processAnswers($consultation->device_id, $answers);
+        $results = $this->expertSystem->processAnswers($consultation->device_id, $answers, $consultation->visual_evidence);
         $primary = $this->expertSystem->determineDiagnosis($results);
 
         if ($primary && $primary['confidence'] >= 40) {
@@ -123,11 +130,17 @@ class ConsultationController extends Controller
                     'diagnosis_id' => $r['diagnosis']->id,
                     'name' => $r['diagnosis']->name,
                     'confidence' => $r['confidence'],
+                    ...array_intersect_key($r, array_flip(['base_confidence', 'visual_support'])),
                 ], $results),
                 'status' => 'completed',
             ]);
         } else {
-            $consultation->update(['status' => 'no_diagnosis']);
+            $consultation->update([
+                'diagnosis_id' => null,
+                'confidence' => null,
+                'all_diagnoses' => null,
+                'status' => 'no_diagnosis',
+            ]);
         }
 
         return redirect()->route('diagnosis.result', $consultation);
@@ -136,6 +149,11 @@ class ConsultationController extends Controller
     public function result(Consultation $consultation)
     {
         $this->authorizeConsultation('view', $consultation);
+
+        if ($consultation->status === 'in_progress') {
+            return redirect()->route('diagnosis.questions', $consultation);
+        }
+
         $consultation->load('device.category', 'diagnosis.repairGuides', 'diagnosis.solutions', 'images', 'answers.symptom');
 
         $repairability = null;

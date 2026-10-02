@@ -14,9 +14,11 @@ use App\Models\Solution;
 use App\Models\Symptom;
 use App\Models\Technician;
 use App\Models\User;
+use App\Services\ClaudeVisionClient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Mockery\MockInterface;
 use Tests\TestCase;
 
 class GuestDiagnosisTest extends TestCase
@@ -139,6 +141,162 @@ class GuestDiagnosisTest extends TestCase
         $this->get(route('diagnosis.result', $consultation))
             ->assertOk()
             ->assertSee('Diagnosis Tidak Dapat Ditentukan');
+    }
+
+    public function test_device_must_belong_to_the_selected_category(): void
+    {
+        $otherCategory = Category::create(['name' => 'AC & Pendingin']);
+        $otherDevice = Device::create(['category_id' => $otherCategory->id, 'name' => 'AC Split']);
+
+        $this->post(route('diagnosis.store'), [...$this->validSubmission(), 'device_id' => $otherDevice->id])
+            ->assertSessionHasErrors('device_id');
+
+        $this->assertDatabaseCount('consultations', 0);
+    }
+
+    public function test_photo_with_an_unusual_jpeg_extension_is_kept(): void
+    {
+        $source = UploadedFile::fake()->image('source.jpg');
+        $jpeg = file_get_contents($source->getRealPath());
+
+        $this->post(route('diagnosis.store'), [
+            ...$this->validSubmission(),
+            'images' => [UploadedFile::fake()->createWithContent('kamera.jfif', $jpeg)],
+        ]);
+
+        $image = Consultation::sole()->images()->sole();
+        $this->assertStringEndsWith('.jpg', $image->image_path);
+        Storage::disk('public')->assertExists($image->image_path);
+    }
+
+    public function test_unanswered_diagnosis_result_sends_the_visitor_to_the_questions(): void
+    {
+        $consultation = $this->guestConsultation();
+
+        $this->get(route('diagnosis.result', $consultation))
+            ->assertRedirect(route('diagnosis.questions', $consultation));
+    }
+
+    public function test_answering_again_without_a_match_clears_the_previous_diagnosis(): void
+    {
+        $consultation = $this->guestConsultation();
+        $this->post(route('diagnosis.answers', $consultation), ['symptom_'.$this->overheatSymptom->id => '1']);
+
+        $this->post(route('diagnosis.answers', $consultation), ['symptom_'.$this->overheatSymptom->id => '0']);
+
+        $consultation->refresh();
+        $this->assertSame('no_diagnosis', $consultation->status);
+        $this->assertNull($consultation->diagnosis_id);
+        $this->assertNull($consultation->confidence);
+        $this->assertNull($consultation->all_diagnoses);
+    }
+
+    public function test_diagnosis_matched_by_several_rules_is_listed_once_with_its_best_score(): void
+    {
+        $secondRule = Rule::create([
+            'diagnosis_id' => $this->diagnosis->id,
+            'rule_code' => 'R-L001-B',
+            'confidence_weight' => 0.60,
+        ]);
+        RuleSymptom::create([
+            'rule_id' => $secondRule->id,
+            'symptom_id' => $this->batterySymptom->id,
+            'expected_answer' => true,
+        ]);
+        $consultation = $this->guestConsultation();
+
+        $this->post(route('diagnosis.answers', $consultation), [
+            'symptom_'.$this->overheatSymptom->id => '1',
+            'symptom_'.$this->batterySymptom->id => '1',
+        ]);
+
+        $this->assertSame(
+            [['diagnosis_id' => $this->diagnosis->id, 'name' => 'Overheat / Panas Berlebih', 'confidence' => 85]],
+            $consultation->refresh()->all_diagnoses,
+        );
+    }
+
+    public function test_uploaded_photos_are_analysed_by_ai_and_the_evidence_is_stored(): void
+    {
+        $this->mock(ClaudeVisionClient::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('isConfigured')->andReturnTrue();
+            $mock->shouldReceive('analyze')
+                ->once()
+                ->withArgs(function (string $system, array $content, array $schema): bool {
+                    $text = collect($content)->firstWhere('type', 'text')['text'];
+
+                    return collect($content)->where('type', 'image')->count() === 1
+                        && collect($content)->firstWhere('type', 'image')['source']['mediaType'] === 'image/jpeg'
+                        && str_contains($text, $this->overheatSymptom->id.': Apakah laptop terasa sangat panas saat digunakan?')
+                        && str_contains($text, '<complaint>Laptop cepat panas lalu mati sendiri.</complaint>');
+                })
+                ->andReturn([
+                    'image_quality' => 'clear',
+                    'summary' => 'Terlihat debu tebal di ventilasi.',
+                    'visual_conditions' => ['debu tebal di ventilasi'],
+                    'symptoms' => [
+                        ['symptom_id' => $this->overheatSymptom->id, 'assessment' => 'visible', 'confidence' => 1.4, 'reason' => 'Ventilasi tertutup debu.'],
+                        ['symptom_id' => 999, 'assessment' => 'visible', 'confidence' => 0.9, 'reason' => 'Gejala yang tidak dikenal.'],
+                    ],
+                    'model' => 'claude-opus-5-5',
+                ]);
+        });
+
+        $this->post(route('diagnosis.store'), $this->validSubmission());
+
+        $evidence = Consultation::sole()->visual_evidence;
+        $this->assertSame('clear', $evidence['image_quality']);
+        $this->assertSame(['debu tebal di ventilasi'], $evidence['visual_conditions']);
+        $this->assertSame(
+            [['symptom_id' => $this->overheatSymptom->id, 'assessment' => 'visible', 'confidence' => 1, 'reason' => 'Ventilasi tertutup debu.']],
+            $evidence['symptoms'],
+        );
+    }
+
+    public function test_diagnosis_continues_without_photo_evidence_when_ai_analysis_fails(): void
+    {
+        $this->mock(ClaudeVisionClient::class, function (MockInterface $mock): void {
+            $mock->shouldReceive('isConfigured')->andReturnTrue();
+            $mock->shouldReceive('analyze')->once()->andReturnNull();
+        });
+
+        $response = $this->post(route('diagnosis.store'), $this->validSubmission());
+
+        $consultation = Consultation::sole();
+        $response->assertRedirect(route('diagnosis.questions', $consultation));
+        $this->assertNull($consultation->visual_evidence);
+    }
+
+    public function test_photo_evidence_confirming_a_rule_raises_its_score(): void
+    {
+        $consultation = $this->guestConsultation(['visual_evidence' => $this->visualEvidence('visible', 0.4)]);
+
+        $this->post(route('diagnosis.answers', $consultation), ['symptom_'.$this->overheatSymptom->id => '1']);
+
+        $consultation->refresh();
+        $this->assertEquals(93.5, $consultation->confidence);
+        $this->assertSame(85, $consultation->all_diagnoses[0]['base_confidence']);
+        $this->assertSame(0.4, $consultation->all_diagnoses[0]['visual_support']);
+    }
+
+    public function test_photo_evidence_contradicting_a_rule_lowers_its_score(): void
+    {
+        $consultation = $this->guestConsultation(['visual_evidence' => $this->visualEvidence('contradicted', 0.8)]);
+
+        $this->post(route('diagnosis.answers', $consultation), ['symptom_'.$this->overheatSymptom->id => '1']);
+
+        $this->assertEquals(68, $consultation->refresh()->confidence);
+    }
+
+    public function test_unclear_photos_do_not_change_the_score(): void
+    {
+        $consultation = $this->guestConsultation([
+            'visual_evidence' => [...$this->visualEvidence('visible', 0.9), 'image_quality' => 'unclear'],
+        ]);
+
+        $this->post(route('diagnosis.answers', $consultation), ['symptom_'.$this->overheatSymptom->id => '1']);
+
+        $this->assertEquals(85, $consultation->refresh()->confidence);
     }
 
     public function test_diagnosis_urls_cannot_be_guessed_from_the_id(): void
@@ -278,6 +436,21 @@ class GuestDiagnosisTest extends TestCase
             'device_id' => $this->device->id,
             'initial_complaint' => 'Laptop cepat panas lalu mati sendiri.',
             'images' => [UploadedFile::fake()->image('laptop.jpg')],
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function visualEvidence(string $assessment, float $confidence): array
+    {
+        return [
+            'image_quality' => 'clear',
+            'summary' => '',
+            'visual_conditions' => [],
+            'symptoms' => [
+                ['symptom_id' => $this->overheatSymptom->id, 'assessment' => $assessment, 'confidence' => $confidence, 'reason' => ''],
+            ],
         ];
     }
 
