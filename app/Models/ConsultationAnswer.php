@@ -8,7 +8,17 @@ class ConsultationAnswer extends Model
 {
     public $timestamps = false;
 
-    protected $fillable = ['consultation_id', 'symptom_id', 'answer', 'created_at'];
+    public const SOURCE_USER = 'user';
+
+    public const SOURCE_COMPLAINT = 'complaint';
+
+    public const SOURCE_PHOTO = 'photo';
+
+    protected $fillable = ['consultation_id', 'symptom_id', 'answer', 'source', 'created_at'];
+
+    protected $attributes = [
+        'source' => self::SOURCE_USER,
+    ];
 
     protected function casts(): array
     {

@@ -20,20 +20,101 @@ class ExpertSystemService
     private const MAX_VISUAL_ADJUSTMENT = 0.25;
 
     /**
-     * Forward chaining over the user's answers. When AI photo evidence is
+     * Questions that can reveal a dangerous (critical) condition are asked earlier.
+     */
+    private const CRITICAL_QUESTION_PRIORITY = 1.5;
+
+    /**
+     * Minimum AI confidence for a photo assessment to answer a question by itself.
+     */
+    private const PHOTO_ANSWER_MIN_CONFIDENCE = 0.8;
+
+    /**
+     * Symptoms the user already states in their complaint, answered "Ya".
+     * The complaint is never used to answer "Tidak".
+     *
+     * @return array<int, bool> symptom_id => answer
+     */
+    public function answersFromComplaint(int $deviceId, string $complaint): array
+    {
+        return Symptom::where('device_id', $deviceId)->get()
+            ->filter(fn (Symptom $symptom) => $symptom->isMentionedIn($complaint))
+            ->mapWithKeys(fn (Symptom $symptom) => [$symptom->id => true])
+            ->all();
+    }
+
+    /**
+     * Symptoms the AI saw (or saw to be absent) with high confidence in clear photos.
+     *
+     * @param  array<string, mixed>|null  $visualEvidence
+     * @return array<int, bool> symptom_id => answer
+     */
+    public function answersFromPhotos(?array $visualEvidence): array
+    {
+        $answers = [];
+        foreach ($this->usableVisualAssessments($visualEvidence) as $symptomId => $visual) {
+            if ($visual['assessment'] !== 'not_determinable' && $visual['confidence'] >= self::PHOTO_ANSWER_MIN_CONFIDENCE) {
+                $answers[$symptomId] = $visual['assessment'] === 'visible';
+            }
+        }
+
+        return $answers;
+    }
+
+    /**
+     * Picks the next question for adaptive questioning and estimates how many
+     * may still follow. Only symptoms of rules that are still possible and
+     * could still beat the best conclusion so far are asked; among those,
+     * symptoms of heavy rules that are close to completion come first.
+     *
+     * @param  array<int, bool>  $answers  symptom_id => answer, known so far
+     * @return array{next: Symptom|null, remaining: int}
+     */
+    public function questionPlan(int $deviceId, array $answers): array
+    {
+        $rules = $this->rulesFor($deviceId);
+
+        $bestConcluded = $rules
+            ->filter(fn (Rule $rule) => $this->isConcluded($rule, $answers))
+            ->max(fn (Rule $rule) => (float) $rule->confidence_weight) ?? 0.0;
+
+        $scores = [];
+        foreach ($rules as $rule) {
+            if ($this->isRuledOut($rule, $answers) || (float) $rule->confidence_weight <= $bestConcluded) {
+                continue;
+            }
+
+            $unknown = $rule->ruleSymptoms->reject(fn ($condition) => array_key_exists($condition->symptom_id, $answers));
+            foreach ($unknown as $condition) {
+                $priority = $rule->diagnosis?->severity === 'critical' ? self::CRITICAL_QUESTION_PRIORITY : 1;
+                $scores[$condition->symptom_id] = ($scores[$condition->symptom_id] ?? 0) + $rule->confidence_weight * $priority / $unknown->count();
+            }
+        }
+
+        if ($scores === []) {
+            return ['next' => null, 'remaining' => 0];
+        }
+
+        uksort($scores, fn (int $a, int $b) => [$scores[$b], $a] <=> [$scores[$a], $b]);
+
+        return ['next' => Symptom::find(array_key_first($scores)), 'remaining' => count($scores)];
+    }
+
+    /**
+     * Forward chaining over the known answers. When AI photo evidence is
      * available, each matched rule's score is raised when the photos show its
-     * symptoms and lowered when they show the opposite.
+     * symptoms and lowered when they show the opposite. Answers that were
+     * themselves taken from the photos are not counted a second time.
      *
      * @param  array<int, bool>  $answers  symptom_id => answer
      * @param  array<string, mixed>|null  $visualEvidence  output of ImageAnalysisService::analyzeUpload()
+     * @param  list<int>  $photoAnsweredSymptomIds
      */
-    public function processAnswers(int $deviceId, array $answers, ?array $visualEvidence = null): array
+    public function processAnswers(int $deviceId, array $answers, ?array $visualEvidence = null, array $photoAnsweredSymptomIds = []): array
     {
-        $rules = Rule::with(['ruleSymptoms.symptom', 'diagnosis'])
-            ->whereHas('diagnosis', fn ($query) => $query->where('device_id', $deviceId))
-            ->get();
+        $rules = $this->rulesFor($deviceId);
 
-        $visualAssessments = $this->usableVisualAssessments($visualEvidence);
+        $visualAssessments = array_diff_key($this->usableVisualAssessments($visualEvidence), array_flip($photoAnsweredSymptomIds));
         $results = [];
 
         foreach ($rules as $rule) {
@@ -117,6 +198,38 @@ class ExpertSystemService
         }
 
         return round($total / $conditions->count(), 2);
+    }
+
+    /**
+     * @return Collection<int, Rule>
+     */
+    private function rulesFor(int $deviceId): Collection
+    {
+        return Rule::with(['ruleSymptoms.symptom', 'diagnosis'])
+            ->whereHas('diagnosis', fn ($query) => $query->where('device_id', $deviceId))
+            ->get();
+    }
+
+    /**
+     * @param  array<int, bool>  $answers
+     */
+    private function isRuledOut(Rule $rule, array $answers): bool
+    {
+        return $rule->ruleSymptoms->contains(
+            fn ($condition) => array_key_exists($condition->symptom_id, $answers)
+                && $answers[$condition->symptom_id] !== $condition->expected_answer
+        );
+    }
+
+    /**
+     * @param  array<int, bool>  $answers
+     */
+    private function isConcluded(Rule $rule, array $answers): bool
+    {
+        return $rule->ruleSymptoms->isNotEmpty() && $rule->ruleSymptoms->every(
+            fn ($condition) => array_key_exists($condition->symptom_id, $answers)
+                && $answers[$condition->symptom_id] === $condition->expected_answer
+        );
     }
 
     private function matchRule(Rule $rule, array $answers): float

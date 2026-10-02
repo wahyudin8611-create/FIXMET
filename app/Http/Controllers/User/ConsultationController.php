@@ -100,38 +100,139 @@ class ConsultationController extends Controller
             ]);
         }
 
-        return redirect()->route('diagnosis.questions', $consultation);
+        $this->recordAutomaticAnswers($consultation);
+
+        return $this->continueDiagnosis($consultation);
     }
 
-    public function questions(Consultation $consultation)
+    /**
+     * Adaptive questioning: shows one question at a time, or the question the
+     * user asked to change (?ubah={symptom_id}).
+     */
+    public function questions(Request $request, Consultation $consultation)
     {
         $this->authorizeConsultation('view', $consultation);
 
-        $symptoms = Symptom::where('device_id', $consultation->device_id)->get();
+        $answers = $this->knownAnswers($consultation);
+        $plan = $this->expertSystem->questionPlan($consultation->device_id, $answers);
 
-        return view('user.consultation.questions', compact('consultation', 'symptoms'));
+        $editing = $request->filled('ubah')
+            ? Symptom::where('device_id', $consultation->device_id)->find($request->integer('ubah'))
+            : null;
+        $question = $editing ?? $plan['next'];
+
+        if ($question === null) {
+            if ($consultation->status === 'in_progress') {
+                $this->concludeDiagnosis($consultation);
+            }
+
+            return redirect()->route('diagnosis.result', $consultation);
+        }
+
+        $knownAnswers = $consultation->answers()->with('symptom')->orderBy('id')->get();
+        $askedCount = $knownAnswers->where('source', ConsultationAnswer::SOURCE_USER)->count();
+
+        return view('user.consultation.questions', [
+            'consultation' => $consultation->load('device'),
+            'question' => $question,
+            'currentAnswer' => $answers[$question->id] ?? null,
+            'knownAnswers' => $knownAnswers,
+            'askedCount' => $askedCount,
+            'remainingCount' => $editing ? $plan['remaining'] : max(0, $plan['remaining'] - 1),
+            'isEditing' => $editing !== null,
+        ]);
     }
 
+    /**
+     * Stores one answer (symptom_id + answer) or several (symptom_{id} fields),
+     * then asks the next question or concludes the diagnosis.
+     */
     public function processAnswers(Request $request, Consultation $consultation)
     {
         $this->authorizeConsultation('update', $consultation);
 
-        $symptoms = Symptom::where('device_id', $consultation->device_id)->get();
+        $deviceSymptomIds = Symptom::where('device_id', $consultation->device_id)->pluck('id');
+        $submitted = [];
 
-        $answers = [];
-        foreach ($symptoms as $symptom) {
-            $key = 'symptom_'.$symptom->id;
-            $answer = $request->has($key) ? (bool) $request->$key : false;
-            $answers[$symptom->id] = $answer;
+        if ($request->has('symptom_id')) {
+            $validated = $request->validate([
+                'symptom_id' => ['required', 'integer', 'in:'.$deviceSymptomIds->implode(',')],
+                'answer' => ['required', 'boolean'],
+            ]);
+            $submitted[(int) $validated['symptom_id']] = (bool) $validated['answer'];
+        } else {
+            foreach ($deviceSymptomIds as $symptomId) {
+                if ($request->has('symptom_'.$symptomId)) {
+                    $submitted[$symptomId] = $request->boolean('symptom_'.$symptomId);
+                }
+            }
+        }
 
+        foreach ($submitted as $symptomId => $answer) {
             ConsultationAnswer::updateOrCreate(
-                ['consultation_id' => $consultation->id, 'symptom_id' => $symptom->id],
-                ['answer' => $answer, 'created_at' => now()]
+                ['consultation_id' => $consultation->id, 'symptom_id' => $symptomId],
+                ['answer' => $answer, 'source' => ConsultationAnswer::SOURCE_USER, 'created_at' => now()]
             );
         }
 
-        // Run Expert System
-        $results = $this->expertSystem->processAnswers($consultation->device_id, $answers, $consultation->visual_evidence);
+        return $this->continueDiagnosis($consultation);
+    }
+
+    /**
+     * Answers questions the user already answered in their complaint, and
+     * those the AI could see clearly in the photos.
+     */
+    private function recordAutomaticAnswers(Consultation $consultation): void
+    {
+        $fromComplaint = $this->expertSystem->answersFromComplaint($consultation->device_id, $consultation->initial_complaint);
+        $fromPhotos = array_diff_key($this->expertSystem->answersFromPhotos($consultation->visual_evidence), $fromComplaint);
+
+        foreach ([ConsultationAnswer::SOURCE_COMPLAINT => $fromComplaint, ConsultationAnswer::SOURCE_PHOTO => $fromPhotos] as $source => $answers) {
+            foreach ($answers as $symptomId => $answer) {
+                ConsultationAnswer::create([
+                    'consultation_id' => $consultation->id,
+                    'symptom_id' => $symptomId,
+                    'answer' => $answer,
+                    'source' => $source,
+                    'created_at' => now(),
+                ]);
+            }
+        }
+    }
+
+    private function continueDiagnosis(Consultation $consultation)
+    {
+        $plan = $this->expertSystem->questionPlan($consultation->device_id, $this->knownAnswers($consultation));
+
+        if ($plan['next'] === null) {
+            $this->concludeDiagnosis($consultation);
+
+            return redirect()->route('diagnosis.result', $consultation);
+        }
+
+        $consultation->update(['status' => 'in_progress']);
+
+        return redirect()->route('diagnosis.questions', $consultation);
+    }
+
+    /**
+     * @return array<int, bool> symptom_id => answer
+     */
+    private function knownAnswers(Consultation $consultation): array
+    {
+        return $consultation->answers()->pluck('answer', 'symptom_id')->map(fn ($answer) => (bool) $answer)->all();
+    }
+
+    private function concludeDiagnosis(Consultation $consultation): void
+    {
+        $photoAnswered = $consultation->answers()->where('source', ConsultationAnswer::SOURCE_PHOTO)->pluck('symptom_id')->all();
+
+        $results = $this->expertSystem->processAnswers(
+            $consultation->device_id,
+            $this->knownAnswers($consultation),
+            $consultation->visual_evidence,
+            $photoAnswered,
+        );
         $primary = $this->expertSystem->determineDiagnosis($results);
 
         if ($primary && $primary['confidence'] >= 40) {
@@ -154,8 +255,6 @@ class ConsultationController extends Controller
                 'status' => 'no_diagnosis',
             ]);
         }
-
-        return redirect()->route('diagnosis.result', $consultation);
     }
 
     public function result(Consultation $consultation)

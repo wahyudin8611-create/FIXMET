@@ -33,6 +33,10 @@ class KnowledgeBaseSeeder extends Seeder
                 );
             }
 
+            foreach ($knowledge['symptom_keywords'] as $code => $keywords) {
+                Symptom::where('device_id', $device->id)->where('code', $code)->update(['keywords' => $keywords]);
+            }
+
             $symptomIds = Symptom::where('device_id', $device->id)->pluck('id', 'code');
 
             foreach ($knowledge['diagnoses'] as $code => $definition) {
@@ -106,19 +110,44 @@ class KnowledgeBaseSeeder extends Seeder
     }
 
     /**
-     * @return array<string, array{keywords: list<string>, symptoms: array<string, string>, diagnoses: array<string, array<string, mixed>>}>
+     * Symptom keywords are everyday phrases (comma-separated) that let the
+     * complaint answer a question "Ya" without asking it.
+     *
+     * @return array<string, array{keywords: list<string>, symptom_keywords: array<string, string>, symptoms: array<string, string>, diagnoses: array<string, array<string, mixed>>}>
      */
     private function knowledgeBase(): array
     {
         return [
             'Laptop' => [
                 'keywords' => ['laptop', 'notebook', 'netbook', 'macbook', 'chromebook', 'ultrabook', 'thinkpad', 'vivobook', 'zenbook', 'ideapad', 'acer', 'dell', 'axioo', 'komputer', 'pc', 'leptop'],
+                'symptom_keywords' => [
+                    'L001' => 'restart sendiri, sering restart, tiba-tiba restart, reboot sendiri, mati sendiri',
+                    'L002' => 'panas, kepanasan, overheat, cepat panas',
+                    'L003' => 'tidak mengisi, tidak bisa dicas, tidak mau dicas, tidak bisa di-charge, gak ngecas, tidak ngecas, baterai tidak terisi',
+                    'L004' => 'berkedip, kedip-kedip, bergaris, garis-garis, layar bergaris, flicker',
+                    'L005' => 'lambat, lemot, lelet, nge-lag, ngelag, sering hang',
+                    'L006' => 'kipas berisik, kipas bunyi, bunyi kipas, kipasnya berisik, suara kipas',
+                    'L007' => 'tidak menyala, tidak mau nyala, gak nyala, nggak nyala, mati total, tidak bisa booting, tidak bisa hidup',
+                    'L008' => 'layar biru, blue screen, bsod',
+                ],
                 'symptoms' => [],
                 'diagnoses' => [],
             ],
 
             'HP Android' => [
                 'keywords' => ['hp', 'handphone', 'hape', 'ponsel', 'smartphone', 'android', 'iphone', 'telepon genggam', 'redmi', 'oppo', 'vivo', 'realme', 'infinix', 'tecno', 'poco'],
+                'symptom_keywords' => [
+                    'H001' => 'baterai cepat habis, batre cepat habis, baterai boros, boros baterai, baterai drop, batre drop, cepat habis',
+                    'H002' => 'panas, kepanasan, overheat, cepat panas',
+                    'H003' => 'tidak mengisi, tidak bisa dicas, tidak mau dicas, gak ngecas, tidak ngecas, tidak bisa di-charge, tidak mau charging',
+                    'H004' => 'digoyang, harus digoyang, harus ditekan, port longgar, colokan longgar, charger longgar',
+                    'H005' => 'retak, pecah, layar retak, layar pecah, kaca pecah',
+                    'H006' => 'bergaris, garis-garis, ghost touch, tidak bisa disentuh, touchscreen error, layar tidak responsif, bercak hitam, layar bercak',
+                    'H007' => 'kena air, terkena air, kecemplung, tercebur, kemasukan air, basah, kehujanan',
+                    'H008' => 'menggembung, kembung, gembung, casing terangkat, baterai bengkak, bengkak',
+                    'H009' => 'bootloop, restart sendiri, mentok di logo, stuck di logo, hang di logo',
+                    'H010' => 'lambat, lemot, lelet, nge-lag, ngelag, force close, aplikasi keluar sendiri, aplikasi tertutup sendiri',
+                ],
                 'symptoms' => [
                     'H001' => 'Apakah baterai HP cepat habis walaupun jarang dipakai?',
                     'H002' => 'Apakah HP terasa panas saat mengisi daya atau saat dipakai ringan?',
@@ -283,6 +312,18 @@ class KnowledgeBaseSeeder extends Seeder
 
             'Mesin Cuci Top Load' => [
                 'keywords' => ['mesin cuci', 'washing machine', 'mesin pencuci', 'mesincuci'],
+                'symptom_keywords' => [
+                    'M001' => 'tidak menyala, tidak mau nyala, gak nyala, nggak nyala, mati total',
+                    'M002' => 'tidak berputar, tidak mau berputar, gak muter, tidak muter, tabung diam, tabung tidak berputar',
+                    'M003' => 'air tidak masuk, air tidak mau masuk, air masuk lambat, air tidak mengisi',
+                    'M004' => 'air tidak terbuang, air tidak mau keluar, tidak bisa buang air, air menggenang di tabung, pembuangan mampet, mampet',
+                    'M005' => 'bocor, rembes, air di lantai, merembes',
+                    'M006' => 'bergetar, getar keras, goyang keras, bergeser, loncat-loncat',
+                    'M007' => 'gemuruh, berderit, bunyi keras, berisik, suara keras',
+                    'M008' => 'bau hangus, gosong, terbakar, korslet, korsleting, percikan api, berasap',
+                    'M009' => 'masih basah, kurang kering, tidak kering',
+                    'M010' => 'kode error, muncul error, lampu berkedip, indikator berkedip',
+                ],
                 'symptoms' => [
                     'M001' => 'Apakah mesin cuci tidak menyala sama sekali saat tombol power ditekan?',
                     'M002' => 'Apakah tabung tidak berputar saat mencuci padahal air sudah masuk?',
@@ -482,6 +523,14 @@ class KnowledgeBaseSeeder extends Seeder
 
             'AC Split' => [
                 'keywords' => ['ac', 'air conditioner', 'aircon', 'pendingin ruangan', 'penyejuk ruangan', 'ac split'],
+                'symptom_keywords' => [
+                    'A001' => 'tidak dingin, kurang dingin, gak dingin, nggak dingin, tidak terasa dingin',
+                    'A002' => 'menetes, netes, meneteskan air, bocor air, air menetes',
+                    'A003' => 'bau, apek, bau tidak sedap, bau busuk',
+                    'A004' => 'berisik, bunyi keras, berdengung, gemeretak, suara keras',
+                    'A005' => 'remote rusak, remote tidak berfungsi, remote mati, remote tidak bisa',
+                    'A006' => 'mati sendiri, mati-mati, sering mati',
+                ],
                 'symptoms' => [],
                 'diagnoses' => [
                     'D-A001' => [
