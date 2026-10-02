@@ -7,6 +7,7 @@ use App\Models\Diagnosis;
 use App\Models\RepairGuide;
 use App\Models\RuleSymptom;
 use App\Models\Symptom;
+use App\Services\DeviceRecognitionService;
 use App\Services\ExpertSystemService;
 use Database\Seeders\KnowledgeBaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -51,6 +52,30 @@ class KnowledgeBaseSeederTest extends TestCase
             'washer burning smell' => ['Mesin Cuci Top Load', ['M001' => true, 'M008' => true], 'Korsleting / Gangguan Kelistrikan'],
             'washer not draining' => ['Mesin Cuci Top Load', ['M004' => true, 'M009' => true], 'Saluran Pembuangan Tersumbat'],
             'dripping air conditioner' => ['AC Split', ['A002' => true], 'Saluran Pembuangan Air (Drain) Tersumbat'],
+        ];
+    }
+
+    #[DataProvider('everydayComplaints')]
+    public function test_device_is_recognised_from_everyday_complaints(string $complaint, ?string $expectedDevice): void
+    {
+        $device = app(DeviceRecognitionService::class)->recognizeFromText($complaint);
+
+        $this->assertSame($expectedDevice, $device?->name);
+    }
+
+    /**
+     * @return array<string, array{string, string|null}>
+     */
+    public static function everydayComplaints(): array
+    {
+        return [
+            'iphone' => ['iPhone saya baterainya cepat habis', 'HP Android'],
+            'phone brand' => ['Layar Oppo A5 saya bergaris', 'HP Android'],
+            'laptop brand' => ['Acer saya tiba-tiba mati sendiri', 'Laptop'],
+            'laptop made by hp' => ['Laptop HP saya panas sekali', 'Laptop'],
+            'air conditioner' => ['AC di kamar meneteskan air', 'AC Split'],
+            'washing machine' => ['Mesin cuci tidak mau berputar', 'Mesin Cuci Top Load'],
+            'unknown device' => ['Kulkas saya tidak dingin', null],
         ];
     }
 

@@ -3,23 +3,24 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
 use App\Models\Consultation;
 use App\Models\ConsultationAnswer;
 use App\Models\ConsultationImage;
+use App\Models\Device;
 use App\Models\Symptom;
+use App\Services\DeviceRecognitionService;
 use App\Services\ExpertSystemService;
 use App\Services\ImageAnalysisService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class ConsultationController extends Controller
 {
     public function __construct(
         private ExpertSystemService $expertSystem,
         private ImageAnalysisService $imageAnalysis,
+        private DeviceRecognitionService $deviceRecognition,
     ) {}
 
     public function index()
@@ -34,19 +35,19 @@ class ConsultationController extends Controller
 
     public function create()
     {
-        $categories = Category::with('devices')->get();
+        $devices = Device::orderBy('name')->get(['id', 'name']);
 
-        return view('user.consultation.create', compact('categories'));
+        return view('user.consultation.create', compact('devices'));
     }
 
+    /**
+     * Users only upload photos and describe the problem. The device is
+     * recognised by the AI from the photos, or from the complaint text when
+     * AI analysis is unavailable.
+     */
     public function storeStep1(Request $request)
     {
         $request->validate([
-            'category_id' => ['required', 'exists:categories,id'],
-            'device_id' => ['required', Rule::exists('devices', 'id')->where('category_id', $request->integer('category_id'))],
-            'device_brand' => ['nullable', 'string', 'max:100'],
-            'device_model' => ['nullable', 'string', 'max:100'],
-            'device_age' => ['nullable', 'integer', 'min:0', 'max:50'],
             'initial_complaint' => ['required', 'string', 'max:1000'],
             'images' => ['required', 'array', 'min:1', 'max:5'],
             'images.*' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
@@ -59,33 +60,44 @@ class ConsultationController extends Controller
             }
         }
 
+        $imagePaths = array_map(
+            fn ($image) => $this->imageAnalysis->storeImage($image),
+            $request->file('images'),
+        );
+
+        $visualEvidence = $this->imageAnalysis->analyzeUpload($imagePaths, $request->initial_complaint);
+        $device = Device::find($visualEvidence['device_id'] ?? null)
+            ?? $this->deviceRecognition->recognizeFromText($request->initial_complaint);
+
+        if ($device === null) {
+            array_map(fn (string $path) => $this->imageAnalysis->deleteImage($path), $imagePaths);
+
+            return back()
+                ->withErrors(['initial_complaint' => $this->unrecognizedDeviceMessage($visualEvidence['device_label'] ?? '')])
+                ->withInput();
+        }
+
         $consultation = Consultation::create([
             'user_id' => $request->user()?->isUser() ? $request->user()->id : null,
-            'device_id' => $request->device_id,
+            'device_id' => $device->id,
             'consultation_code' => 'CONS-'.strtoupper(Str::random(8)),
-            'device_brand' => $request->device_brand,
-            'device_model' => $request->device_model,
-            'device_age' => $request->device_age,
+            'device_brand' => $visualEvidence['device_brand'] ?? null,
+            'device_model' => $visualEvidence['device_model'] ?? null,
             'initial_complaint' => $request->initial_complaint,
             'status' => 'in_progress',
+            'visual_evidence' => $visualEvidence,
         ]);
 
         if ($consultation->isGuest()) {
             $request->session()->push(Consultation::GUEST_SESSION_KEY, $consultation->id);
         }
 
-        foreach ($request->file('images') as $image) {
-            $path = $this->imageAnalysis->storeImage($image);
+        foreach ($imagePaths as $path) {
             ConsultationImage::create([
                 'consultation_id' => $consultation->id,
                 'image_path' => $path,
                 'created_at' => now(),
             ]);
-        }
-
-        $visualEvidence = $this->imageAnalysis->analyzeConsultation($consultation);
-        if ($visualEvidence !== null) {
-            $consultation->update(['visual_evidence' => $visualEvidence]);
         }
 
         return redirect()->route('diagnosis.questions', $consultation);
@@ -172,6 +184,21 @@ class ConsultationController extends Controller
             ->paginate(15);
 
         return view('user.history', compact('consultations'));
+    }
+
+    /**
+     * Tells the user what to add to the complaint, or that the device the AI
+     * saw is not covered by the knowledge base yet.
+     */
+    private function unrecognizedDeviceMessage(string $detectedLabel): string
+    {
+        if ($detectedLabel !== '') {
+            return "Perangkat Anda terlihat seperti {$detectedLabel}, yang belum bisa didiagnosis otomatis oleh FIXMET. Silakan cari teknisi untuk pemeriksaan langsung.";
+        }
+
+        $supported = Device::orderBy('name')->pluck('name')->implode(', ');
+
+        return "Kami belum bisa mengenali perangkatnya. Sebutkan jenis perangkat di keluhan Anda, misalnya \"HP saya layarnya retak\". Perangkat yang didukung: {$supported}.";
     }
 
     /**

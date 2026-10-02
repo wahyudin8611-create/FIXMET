@@ -69,7 +69,7 @@ class ClaudeVisionClient
             if ($block->type === 'text') {
                 $decoded = json_decode($block->text, true);
 
-                return is_array($decoded) ? [...$decoded, 'model' => $message->model] : null;
+                return is_array($decoded) ? [...$decoded, 'ai_model' => $message->model] : null;
             }
         }
 

@@ -24,6 +24,7 @@ class KnowledgeBaseSeeder extends Seeder
     {
         foreach ($this->knowledgeBase() as $deviceName => $knowledge) {
             $device = Device::where('name', $deviceName)->firstOrFail();
+            $device->update(['keywords' => implode(', ', $knowledge['keywords'])]);
 
             foreach ($knowledge['symptoms'] as $code => $question) {
                 Symptom::updateOrCreate(
@@ -105,12 +106,19 @@ class KnowledgeBaseSeeder extends Seeder
     }
 
     /**
-     * @return array<string, array{symptoms: array<string, string>, diagnoses: array<string, array<string, mixed>>}>
+     * @return array<string, array{keywords: list<string>, symptoms: array<string, string>, diagnoses: array<string, array<string, mixed>>}>
      */
     private function knowledgeBase(): array
     {
         return [
+            'Laptop' => [
+                'keywords' => ['laptop', 'notebook', 'netbook', 'macbook', 'chromebook', 'ultrabook', 'thinkpad', 'vivobook', 'zenbook', 'ideapad', 'acer', 'dell', 'axioo', 'komputer', 'pc', 'leptop'],
+                'symptoms' => [],
+                'diagnoses' => [],
+            ],
+
             'HP Android' => [
+                'keywords' => ['hp', 'handphone', 'hape', 'ponsel', 'smartphone', 'android', 'iphone', 'telepon genggam', 'redmi', 'oppo', 'vivo', 'realme', 'infinix', 'tecno', 'poco'],
                 'symptoms' => [
                     'H001' => 'Apakah baterai HP cepat habis walaupun jarang dipakai?',
                     'H002' => 'Apakah HP terasa panas saat mengisi daya atau saat dipakai ringan?',
@@ -274,6 +282,7 @@ class KnowledgeBaseSeeder extends Seeder
             ],
 
             'Mesin Cuci Top Load' => [
+                'keywords' => ['mesin cuci', 'washing machine', 'mesin pencuci', 'mesincuci'],
                 'symptoms' => [
                     'M001' => 'Apakah mesin cuci tidak menyala sama sekali saat tombol power ditekan?',
                     'M002' => 'Apakah tabung tidak berputar saat mencuci padahal air sudah masuk?',
@@ -472,6 +481,7 @@ class KnowledgeBaseSeeder extends Seeder
             ],
 
             'AC Split' => [
+                'keywords' => ['ac', 'air conditioner', 'aircon', 'pendingin ruangan', 'penyejuk ruangan', 'ac split'],
                 'symptoms' => [],
                 'diagnoses' => [
                     'D-A001' => [

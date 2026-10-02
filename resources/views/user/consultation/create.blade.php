@@ -5,7 +5,7 @@
     <div class="mb-6">
         <a href="{{ auth()->user()?->isUser() ? route('user.dashboard') : route('home') }}" class="text-sm text-gray-500 hover:text-primary-600">&larr; Kembali</a>
         <h1 class="text-2xl font-bold mt-2">Mulai Diagnosis Kerusakan</h1>
-        <p class="text-gray-500 text-sm mt-1">Upload foto kerusakan dan isi informasi perangkat Anda.</p>
+        <p class="text-gray-500 text-sm mt-1">Upload foto kerusakan dan ceritakan masalahnya. Tidak perlu memilih kategori, merek, atau model, karena sistem akan mengenali perangkatnya sendiri.</p>
     </div>
 
     <form action="{{ route('diagnosis.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" id="diagnosisForm"
@@ -38,61 +38,17 @@
             @error('images.*') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
         </div>
 
-        {{-- Device Info --}}
-        <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
-            <h2 class="font-semibold">Informasi Perangkat</h2>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori <span class="text-red-500">*</span></label>
-                <select name="category_id" id="categorySelect" required onchange="loadDevices(this.value)"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 @error('category_id') border-red-400 @enderror">
-                    <option value="">-- Pilih Kategori --</option>
-                    @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                    @endforeach
-                </select>
-                @error('category_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Perangkat <span class="text-red-500">*</span></label>
-                <select name="device_id" id="deviceSelect" required
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 @error('device_id') border-red-400 @enderror">
-                    <option value="">-- Pilih Perangkat --</option>
-                    @foreach($categories as $cat)
-                        @foreach($cat->devices as $dev)
-                        <option value="{{ $dev->id }}" data-cat="{{ $cat->id }}" {{ old('device_id') == $dev->id ? 'selected' : '' }} class="device-opt cat-{{ $cat->id }}">{{ $dev->name }}</option>
-                        @endforeach
-                    @endforeach
-                </select>
-                @error('device_id') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-            </div>
-
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Merk</label>
-                    <input type="text" name="device_brand" value="{{ old('device_brand') }}" placeholder="contoh: ASUS"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                    <input type="text" name="device_model" value="{{ old('device_model') }}" placeholder="contoh: VivoBook"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500">
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Usia Perangkat (tahun)</label>
-                <input type="number" name="device_age" value="{{ old('device_age') }}" min="0" max="50" placeholder="0"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500">
-            </div>
-
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Keluhan / Gejala <span class="text-red-500">*</span></label>
-                <textarea name="initial_complaint" rows="3" required placeholder="Jelaskan keluhan Anda secara detail..." maxlength="1000"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 @error('initial_complaint') border-red-400 @enderror">{{ old('initial_complaint') }}</textarea>
-                @error('initial_complaint') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-            </div>
+        {{-- Complaint --}}
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+            <label for="initialComplaint" class="block font-semibold mb-1">Ceritakan Masalahnya <span class="text-red-500">*</span></label>
+            <p class="text-sm text-gray-500 mb-3">Sebutkan perangkatnya dan apa yang terjadi, dengan bahasa sehari-hari.</p>
+            <textarea name="initial_complaint" id="initialComplaint" rows="4" required maxlength="1000"
+                placeholder="Contoh: HP saya jatuh, layarnya retak dan sebagian tidak bisa disentuh."
+                class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-primary-500 @error('initial_complaint') border-red-400 @enderror">{{ old('initial_complaint') }}</textarea>
+            @error('initial_complaint') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+            @if($devices->isNotEmpty())
+            <p class="text-xs text-gray-400 mt-2">Saat ini FIXMET dapat mendiagnosis: {{ $devices->pluck('name')->implode(', ') }}.</p>
+            @endif
         </div>
 
         <button type="submit" :disabled="submitting"
@@ -130,16 +86,6 @@ function previewImages(e) {
         };
         reader.readAsDataURL(file);
     });
-}
-
-function loadDevices(categoryId) {
-    const select = document.getElementById('deviceSelect');
-    const opts = select.querySelectorAll('option');
-    opts.forEach(opt => {
-        if (opt.value === '') return;
-        opt.style.display = (opt.dataset.cat === categoryId) ? '' : 'none';
-    });
-    select.value = '';
 }
 </script>
 @endpush

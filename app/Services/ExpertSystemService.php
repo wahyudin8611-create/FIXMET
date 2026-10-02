@@ -25,7 +25,7 @@ class ExpertSystemService
      * symptoms and lowered when they show the opposite.
      *
      * @param  array<int, bool>  $answers  symptom_id => answer
-     * @param  array<string, mixed>|null  $visualEvidence  output of ImageAnalysisService::analyzeConsultation()
+     * @param  array<string, mixed>|null  $visualEvidence  output of ImageAnalysisService::analyzeUpload()
      */
     public function processAnswers(int $deviceId, array $answers, ?array $visualEvidence = null): array
     {

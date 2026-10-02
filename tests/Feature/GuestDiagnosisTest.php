@@ -42,7 +42,7 @@ class GuestDiagnosisTest extends TestCase
         Storage::fake('public');
 
         $this->category = Category::create(['name' => 'Laptop & Komputer']);
-        $this->device = Device::create(['category_id' => $this->category->id, 'name' => 'Laptop']);
+        $this->device = Device::create(['category_id' => $this->category->id, 'name' => 'Laptop', 'keywords' => 'laptop, notebook, macbook']);
         $this->overheatSymptom = Symptom::create([
             'device_id' => $this->device->id,
             'code' => 'L002',
@@ -143,13 +143,56 @@ class GuestDiagnosisTest extends TestCase
             ->assertSee('Diagnosis Tidak Dapat Ditentukan');
     }
 
-    public function test_device_must_belong_to_the_selected_category(): void
+    public function test_device_is_recognised_from_the_complaint_without_choosing_a_category(): void
     {
-        $otherCategory = Category::create(['name' => 'AC & Pendingin']);
-        $otherDevice = Device::create(['category_id' => $otherCategory->id, 'name' => 'AC Split']);
+        $phone = $this->phoneDevice();
 
-        $this->post(route('diagnosis.store'), [...$this->validSubmission(), 'device_id' => $otherDevice->id])
-            ->assertSessionHasErrors('device_id');
+        $this->post(route('diagnosis.store'), [...$this->validSubmission(), 'initial_complaint' => 'Redmi saya layarnya retak setelah jatuh']);
+
+        $this->assertSame($phone->id, Consultation::sole()->device_id);
+    }
+
+    public function test_device_mentioned_first_wins_when_a_brand_name_is_shared(): void
+    {
+        $this->phoneDevice();
+
+        $this->post(route('diagnosis.store'), [...$this->validSubmission(), 'initial_complaint' => 'Laptop HP saya cepat panas']);
+
+        $this->assertSame($this->device->id, Consultation::sole()->device_id);
+    }
+
+    public function test_unrecognised_device_returns_to_the_form_without_keeping_the_photos(): void
+    {
+        $this->post(route('diagnosis.store'), [...$this->validSubmission(), 'initial_complaint' => 'Barang saya rusak, tolong dicek'])
+            ->assertSessionHasErrors(['initial_complaint' => 'Kami belum bisa mengenali perangkatnya. Sebutkan jenis perangkat di keluhan Anda, misalnya "HP saya layarnya retak". Perangkat yang didukung: Laptop.']);
+
+        $this->assertDatabaseCount('consultations', 0);
+        $this->assertSame([], Storage::disk('public')->allFiles());
+    }
+
+    public function test_ai_recognises_the_device_and_its_brand_from_the_photos(): void
+    {
+        $this->mockVisionResult([
+            'device_id' => $this->device->id,
+            'device_label' => 'laptop',
+            'brand' => 'ASUS',
+            'model' => 'VivoBook 14',
+        ]);
+
+        $this->post(route('diagnosis.store'), [...$this->validSubmission(), 'initial_complaint' => 'Layarnya bergaris sejak kemarin']);
+
+        $consultation = Consultation::sole();
+        $this->assertSame($this->device->id, $consultation->device_id);
+        $this->assertSame('ASUS', $consultation->device_brand);
+        $this->assertSame('VivoBook 14', $consultation->device_model);
+    }
+
+    public function test_device_the_ai_sees_but_fixmet_does_not_support_is_explained(): void
+    {
+        $this->mockVisionResult(['device_id' => 0, 'device_label' => 'kulkas']);
+
+        $this->post(route('diagnosis.store'), [...$this->validSubmission(), 'initial_complaint' => 'Tidak dingin lagi dan berisik'])
+            ->assertSessionHasErrors(['initial_complaint' => 'Perangkat Anda terlihat seperti kulkas, yang belum bisa didiagnosis otomatis oleh FIXMET. Silakan cari teknisi untuk pemeriksaan langsung.']);
 
         $this->assertDatabaseCount('consultations', 0);
     }
@@ -227,10 +270,15 @@ class GuestDiagnosisTest extends TestCase
 
                     return collect($content)->where('type', 'image')->count() === 1
                         && collect($content)->firstWhere('type', 'image')['source']['mediaType'] === 'image/jpeg'
-                        && str_contains($text, $this->overheatSymptom->id.': Apakah laptop terasa sangat panas saat digunakan?')
+                        && str_contains($text, "device_id {$this->device->id}: Laptop (Laptop & Komputer)")
+                        && str_contains($text, "symptom_id {$this->overheatSymptom->id}: Apakah laptop terasa sangat panas saat digunakan?")
                         && str_contains($text, '<complaint>Laptop cepat panas lalu mati sendiri.</complaint>');
                 })
                 ->andReturn([
+                    'device_id' => $this->device->id,
+                    'device_label' => 'laptop',
+                    'brand' => '',
+                    'model' => '',
                     'image_quality' => 'clear',
                     'summary' => 'Terlihat debu tebal di ventilasi.',
                     'visual_conditions' => ['debu tebal di ventilasi'],
@@ -238,7 +286,7 @@ class GuestDiagnosisTest extends TestCase
                         ['symptom_id' => $this->overheatSymptom->id, 'assessment' => 'visible', 'confidence' => 1.4, 'reason' => 'Ventilasi tertutup debu.'],
                         ['symptom_id' => 999, 'assessment' => 'visible', 'confidence' => 0.9, 'reason' => 'Gejala yang tidak dikenal.'],
                     ],
-                    'model' => 'claude-opus-5-5',
+                    'ai_model' => 'claude-opus-5-5',
                 ]);
         });
 
@@ -491,11 +539,36 @@ class GuestDiagnosisTest extends TestCase
     private function validSubmission(): array
     {
         return [
-            'category_id' => $this->category->id,
-            'device_id' => $this->device->id,
             'initial_complaint' => 'Laptop cepat panas lalu mati sendiri.',
             'images' => [UploadedFile::fake()->image('laptop.jpg')],
         ];
+    }
+
+    private function phoneDevice(): Device
+    {
+        $category = Category::create(['name' => 'Smartphone']);
+
+        return Device::create(['category_id' => $category->id, 'name' => 'HP Android', 'keywords' => 'hp, handphone, redmi, iphone']);
+    }
+
+    /**
+     * @param  array<string, mixed>  $result
+     */
+    private function mockVisionResult(array $result): void
+    {
+        $this->mock(ClaudeVisionClient::class, function (MockInterface $mock) use ($result): void {
+            $mock->shouldReceive('isConfigured')->andReturnTrue();
+            $mock->shouldReceive('analyze')->once()->andReturn([
+                'device_label' => '',
+                'brand' => '',
+                'model' => '',
+                'image_quality' => 'clear',
+                'summary' => '',
+                'visual_conditions' => [],
+                'symptoms' => [],
+                ...$result,
+            ]);
+        });
     }
 
     /**
