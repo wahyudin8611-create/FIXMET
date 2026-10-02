@@ -6,6 +6,23 @@
         <a href="{{ route('user.dashboard') }}" class="text-sm text-gray-500 hover:text-primary-600">&larr; Dashboard</a>
     </div>
 
+    @if($consultation->isGuest() && auth()->guest())
+    <div class="bg-white border border-fm-primary/20 rounded-2xl p-4 mb-5 flex items-start gap-3">
+        <div class="w-9 h-9 rounded-xl bg-fm-primary/10 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-fm-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div class="text-sm">
+            <p class="font-semibold text-gray-900">Hasil ini disimpan selama {{ \App\Models\Consultation::GUEST_RETENTION_DAYS }} hari</p>
+            <p class="text-fm-muted mt-0.5">
+                Simpan link halaman ini untuk membukanya lagi. Agar tersimpan permanen,
+                <a href="{{ route('login') }}" class="font-semibold text-fm-primary hover:underline">masuk</a> atau
+                <a href="{{ route('register') }}" class="font-semibold text-fm-primary hover:underline">daftar</a>
+                di browser ini, dan hasil diagnosis akan otomatis pindah ke akun Anda.
+            </p>
+        </div>
+    </div>
+    @endif
+
     @if($consultation->status === 'no_diagnosis')
         {{-- No Diagnosis --}}
         <div class="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
@@ -22,8 +39,15 @@
             </div>
             <a href="{{ route('technicians.index') }}" class="inline-block bg-orange-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-orange-700">Cari Teknisi</a>
         </div>
+
+        <div class="mt-5">
+            @include('user.consultation.partials.visual-evidence')
+        </div>
     @elseif($consultation->diagnosis)
-        @php $d = $consultation->diagnosis; @endphp
+        @php
+            $d = $consultation->diagnosis;
+            $primaryScore = collect($consultation->all_diagnoses ?? [])->firstWhere('diagnosis_id', $d->id);
+        @endphp
 
         {{-- Main Result Card --}}
         <div class="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden mb-5">
@@ -37,6 +61,12 @@
                     <div class="text-right">
                         <div class="text-3xl font-bold">{{ number_format($consultation->confidence, 0) }}%</div>
                         <div class="text-emerald-200 text-xs">Tingkat kecocokan</div>
+                        @if(isset($primaryScore['base_confidence']) && round($primaryScore['base_confidence']) != round($consultation->confidence))
+                            <div class="text-emerald-100 text-xs mt-1">
+                                {{ number_format($primaryScore['base_confidence'], 0) }}% dari jawaban
+                                &rarr; {{ number_format($consultation->confidence, 0) }}% setelah analisis foto
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -126,6 +156,8 @@
                 </div>
             </div>
         </div>
+
+        @include('user.consultation.partials.visual-evidence')
 
         {{-- Foto Kerusakan --}}
         @if($consultation->images->isNotEmpty())

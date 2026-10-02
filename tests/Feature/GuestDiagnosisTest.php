@@ -299,6 +299,65 @@ class GuestDiagnosisTest extends TestCase
         $this->assertEquals(85, $consultation->refresh()->confidence);
     }
 
+    public function test_result_page_shows_the_ai_photo_findings(): void
+    {
+        $consultation = $this->guestConsultation(['visual_evidence' => [
+            ...$this->visualEvidence('visible', 0.4),
+            'summary' => 'Ventilasi laptop tertutup debu tebal.',
+            'visual_conditions' => ['debu tebal di ventilasi samping'],
+        ]]);
+        $this->post(route('diagnosis.answers', $consultation), ['symptom_'.$this->overheatSymptom->id => '1']);
+
+        $this->get(route('diagnosis.result', $consultation))
+            ->assertOk()
+            ->assertSeeInOrder(['Overheat / Panas Berlebih', 'Analisis Foto AI'])
+            ->assertSee('85% dari jawaban')
+            ->assertSee('94% setelah analisis foto')
+            ->assertSee('Ventilasi laptop tertutup debu tebal.')
+            ->assertSee('debu tebal di ventilasi samping')
+            ->assertSee('Terlihat di foto')
+            ->assertSee('jawaban Anda: Ya');
+    }
+
+    public function test_result_page_warns_when_photos_are_unclear(): void
+    {
+        $consultation = $this->guestConsultation([
+            'visual_evidence' => [...$this->visualEvidence('visible', 0.9), 'image_quality' => 'unclear'],
+        ]);
+        $this->post(route('diagnosis.answers', $consultation), ['symptom_'.$this->overheatSymptom->id => '1']);
+
+        $this->get(route('diagnosis.result', $consultation))
+            ->assertOk()
+            ->assertSee('Foto kurang jelas, sehingga tidak dipakai untuk menghitung skor diagnosis.')
+            ->assertDontSee('setelah analisis foto');
+    }
+
+    public function test_result_page_hides_the_ai_section_when_no_analysis_ran(): void
+    {
+        $consultation = $this->guestConsultation();
+        $this->post(route('diagnosis.answers', $consultation), ['symptom_'.$this->overheatSymptom->id => '1']);
+
+        $this->get(route('diagnosis.result', $consultation))
+            ->assertOk()
+            ->assertDontSee('Analisis Foto AI');
+    }
+
+    public function test_guest_sees_how_long_their_result_is_kept(): void
+    {
+        $consultation = $this->guestConsultation();
+        $this->post(route('diagnosis.answers', $consultation), ['symptom_'.$this->overheatSymptom->id => '1']);
+
+        $this->get(route('diagnosis.result', $consultation))
+            ->assertSee('Hasil ini disimpan selama 7 hari');
+
+        $owner = User::factory()->create();
+        $consultation->update(['user_id' => $owner->id]);
+
+        $this->actingAs($owner)
+            ->get(route('diagnosis.result', $consultation))
+            ->assertDontSee('Hasil ini disimpan selama 7 hari');
+    }
+
     public function test_diagnosis_urls_cannot_be_guessed_from_the_id(): void
     {
         $consultation = $this->guestConsultation();

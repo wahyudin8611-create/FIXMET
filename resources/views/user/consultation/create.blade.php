@@ -8,7 +8,8 @@
         <p class="text-gray-500 text-sm mt-1">Upload foto kerusakan dan isi informasi perangkat Anda.</p>
     </div>
 
-    <form action="{{ route('diagnosis.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" id="diagnosisForm">
+    <form action="{{ route('diagnosis.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" id="diagnosisForm"
+        x-data="{ submitting: false }" @submit="submitting = true" @pageshow.window="submitting = false">
         @csrf
 
         {{-- Photo Upload --}}
@@ -94,9 +95,17 @@
             </div>
         </div>
 
-        <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition">
-            Lanjutkan ke Pertanyaan Diagnosis →
+        <button type="submit" :disabled="submitting"
+            class="w-full bg-primary-600 text-white py-3 rounded-xl font-semibold hover:bg-primary-700 transition disabled:opacity-80 disabled:cursor-wait">
+            <span x-show="!submitting">Lanjutkan ke Pertanyaan Diagnosis →</span>
+            <span x-show="submitting" x-cloak class="inline-flex items-center justify-center gap-2">
+                <svg class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>
+                Mengunggah dan menganalisis foto...
+            </span>
         </button>
+        <p x-show="submitting" x-cloak class="text-center text-xs text-fm-muted -mt-2">
+            Proses ini bisa memakan waktu hingga 30 detik. Mohon jangan menutup halaman.
+        </p>
     </form>
 </div>
 
