@@ -28,7 +28,7 @@
                 </td>
                 <td class="px-4 py-3 text-gray-600">{{ $t->specialization }}</td>
                 <td class="px-4 py-3 text-gray-600">{{ $t->service_area }}</td>
-                <td class="px-4 py-3">⭐ {{ number_format($t->rating, 1) }}</td>
+                <td class="px-4 py-3"><span class="inline-flex items-center gap-1"><x-icon name="star" class="w-4 h-4 text-amber-400" /> {{ number_format($t->rating, 1) }}</span></td>
                 <td class="px-4 py-3">
                     <span class="px-2 py-1 rounded-full text-xs font-medium
                         {{ $t->status === 'verified' ? 'bg-green-100 text-green-700' :

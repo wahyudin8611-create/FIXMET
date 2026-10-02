@@ -4,9 +4,9 @@
 @section('content')
 <div class="max-w-2xl">
     @if($technician->status === 'verified')
-    <div class="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 text-sm text-green-700 font-medium">✓ Profil Anda telah diverifikasi oleh admin.</div>
+    <div class="bg-green-50 border border-green-200 rounded-xl p-3 mb-4 text-sm text-green-700 font-medium"><x-icon name="shield-check" class="inline w-4 h-4 mr-1 align-text-bottom" />Profil Anda telah diverifikasi oleh admin.</div>
     @elseif($technician->exists)
-    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mb-4 text-sm text-yellow-700">⏳ Menunggu verifikasi admin.</div>
+    <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mb-4 text-sm text-yellow-700"><x-icon name="clock" class="inline w-4 h-4 mr-1 align-text-bottom" />Menunggu verifikasi admin.</div>
     @endif
 
     <form action="{{ route('technician.profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
@@ -50,21 +50,21 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">KTP / Identitas</label>
                 <input type="file" name="identity_card" accept="image/jpeg,image/png" class="text-sm w-full">
                 @if($technician->identity_card)
-                <p class="text-xs text-green-600 mt-1">✓ File sudah ada</p>
+                <p class="text-xs text-green-600 mt-1"><x-icon name="check" class="inline w-4 h-4 mr-1 align-text-bottom" />File sudah ada</p>
                 @endif
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Sertifikat Keahlian</label>
                 <input type="file" name="certificate" accept="image/jpeg,image/png,.pdf" class="text-sm w-full">
                 @if($technician->certificate)
-                <p class="text-xs text-green-600 mt-1">✓ File sudah ada</p>
+                <p class="text-xs text-green-600 mt-1"><x-icon name="check" class="inline w-4 h-4 mr-1 align-text-bottom" />File sudah ada</p>
                 @endif
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Bukti Keahlian / Portofolio</label>
                 <input type="file" name="skill_evidence" accept="image/jpeg,image/png,.pdf" class="text-sm w-full">
                 @if($technician->skill_evidence)
-                <p class="text-xs text-green-600 mt-1">✓ File sudah ada</p>
+                <p class="text-xs text-green-600 mt-1"><x-icon name="check" class="inline w-4 h-4 mr-1 align-text-bottom" />File sudah ada</p>
                 @endif
             </div>
         </div>

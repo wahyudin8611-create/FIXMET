@@ -12,21 +12,21 @@
                     <div class="flex items-center gap-2 flex-wrap">
                         <h1 class="text-xl font-bold text-gray-900">{{ $technician->user->name }}</h1>
                         @if($technician->is_verified)
-                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium">✓ Terverifikasi</span>
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1"><x-icon name="shield-check" class="w-3.5 h-3.5" /> Terverifikasi</span>
                         @endif
                         <span class="text-xs {{ $technician->is_available ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }} px-2 py-0.5 rounded-full">
                             {{ $technician->is_available ? 'Tersedia' : 'Tidak Tersedia' }}
                         </span>
                     </div>
                     <div class="flex items-center gap-1 mt-1">
-                        <span class="text-yellow-500">⭐</span>
+                        <x-icon name="star" class="w-4 h-4 text-amber-400" />
                         <span class="font-semibold">{{ number_format($technician->rating, 1) }}</span>
                         <span class="text-gray-500 text-sm">({{ $technician->reviews->count() }} ulasan)</span>
                     </div>
                     <div class="mt-2 space-y-1 text-sm text-gray-600">
-                        <div>🔧 {{ $technician->specialization }}</div>
-                        <div>📍 {{ $technician->service_area }}</div>
-                        <div>💼 {{ $technician->experience_years }} tahun · ✅ {{ $technician->completed_jobs }} selesai</div>
+                        <div class="flex items-center gap-2"><x-icon name="wrench" class="w-4 h-4 text-gray-400 shrink-0" /> {{ $technician->specialization }}</div>
+                        <div class="flex items-center gap-2"><x-icon name="map-pin" class="w-4 h-4 text-gray-400 shrink-0" /> {{ $technician->service_area }}</div>
+                        <div class="flex items-center gap-2"><x-icon name="briefcase" class="w-4 h-4 text-gray-400 shrink-0" /> {{ $technician->experience_years }} tahun pengalaman · {{ $technician->completed_jobs }} pekerjaan selesai</div>
                     </div>
                 </div>
                 <div class="text-right">
@@ -59,7 +59,7 @@
                     <div class="flex items-center gap-2 mb-2">
                         <img src="{{ $r->user->profile_photo_url }}" class="w-7 h-7 rounded-full" alt="">
                         <span class="font-medium text-sm text-gray-900">{{ $r->user->name }}</span>
-                        <span class="text-yellow-500 text-sm">{{ str_repeat('⭐', $r->rating) }}</span>
+                        <span class="flex gap-0.5 text-amber-400" aria-label="{{ $r->rating }} dari 5 bintang">@for($star = 1; $star <= 5; $star++)<x-icon name="star" class="w-3.5 h-3.5 {{ $star <= $r->rating ? '' : 'text-gray-200' }}" />@endfor</span>
                     </div>
                     @if($r->review)
                     <p class="text-sm text-gray-600">{{ $r->review }}</p>

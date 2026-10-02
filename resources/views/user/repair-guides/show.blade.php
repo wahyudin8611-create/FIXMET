@@ -7,7 +7,7 @@
     <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden">
         <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-6">
             <div class="flex items-center gap-2 text-green-200 text-sm mb-2">
-                <span>📖 Panduan Perbaikan</span>
+                <x-icon name="book-open" class="w-4 h-4" /><span>Panduan Perbaikan</span>
             </div>
             <h1 class="text-2xl font-bold">{{ $repairGuide->title }}</h1>
             <p class="text-green-200 text-sm mt-1">{{ $repairGuide->diagnosis->name }} — {{ $repairGuide->diagnosis->device->name }}</p>
@@ -34,7 +34,7 @@
             @if($repairGuide->safety_warning)
             <div class="bg-yellow-50 border border-yellow-300 rounded-xl p-4 mb-5">
                 <div class="flex items-start gap-2">
-                    <span class="text-xl">⚠️</span>
+                    <x-icon name="exclamation" class="w-5 h-5 text-yellow-600 shrink-0 mt-0.5" />
                     <div>
                         <p class="font-semibold text-yellow-800">Peringatan Keselamatan</p>
                         <p class="text-yellow-700 text-sm mt-1">{{ $repairGuide->safety_warning }}</p>
@@ -63,7 +63,7 @@
                             <h4 class="font-semibold text-gray-900">{{ $step->title }}</h4>
                             <p class="text-sm text-gray-600 mt-1">{{ $step->description }}</p>
                             @if($step->warning)
-                            <div class="mt-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">⚠️ {{ $step->warning }}</div>
+                            <div class="mt-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2 flex items-start gap-1.5"><x-icon name="exclamation" class="w-4 h-4 shrink-0" /><span>{{ $step->warning }}</span></div>
                             @endif
                         </div>
                     </div>
@@ -75,7 +75,7 @@
             {{-- Do Not Do --}}
             @if($repairGuide->do_not_do)
             <div class="bg-red-50 border border-red-200 rounded-xl p-4">
-                <h3 class="font-semibold text-red-700 mb-2">❌ Jangan Dilakukan</h3>
+                <h3 class="font-semibold text-red-700 mb-2 flex items-center gap-2"><x-icon name="ban" class="w-5 h-5" /> Jangan Dilakukan</h3>
                 <p class="text-sm text-red-600 whitespace-pre-line">{{ $repairGuide->do_not_do }}</p>
             </div>
             @endif

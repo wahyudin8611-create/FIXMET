@@ -5,15 +5,15 @@
 
 <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
     @foreach([
-        ['Total Users', $stats['total_users'], '👥', 'blue'],
-        ['Teknisi Aktif', $stats['total_technicians'], '🔧', 'green'],
-        ['Menunggu Verifikasi', $stats['pending_technicians'], '⏳', 'yellow'],
-        ['Total Konsultasi', $stats['total_consultations'], '🔍', 'purple'],
-        ['Total Booking', $stats['total_bookings'], '📅', 'indigo'],
-        ['Perbaikan Selesai', $stats['completed_bookings'], '✅', 'green'],
+        ['Total Users', $stats['total_users'], 'users', 'blue'],
+        ['Teknisi Aktif', $stats['total_technicians'], 'wrench', 'green'],
+        ['Menunggu Verifikasi', $stats['pending_technicians'], 'clock', 'yellow'],
+        ['Total Konsultasi', $stats['total_consultations'], 'search', 'purple'],
+        ['Total Booking', $stats['total_bookings'], 'calendar', 'indigo'],
+        ['Perbaikan Selesai', $stats['completed_bookings'], 'check-circle', 'green'],
     ] as [$label, $value, $icon, $color])
     <div class="bg-white border border-gray-200 rounded-xl p-4">
-        <div class="text-2xl mb-1">{{ $icon }}</div>
+        <div class="w-9 h-9 rounded-lg bg-fm-primary/10 text-fm-primary flex items-center justify-center mb-2"><x-icon :name="$icon" class="w-5 h-5" /></div>
         <div class="text-2xl font-bold text-gray-900">{{ $value }}</div>
         <div class="text-sm text-gray-500">{{ $label }}</div>
     </div>

@@ -26,7 +26,7 @@
     @if($consultation->status === 'no_diagnosis')
         {{-- No Diagnosis --}}
         <div class="bg-orange-50 border border-orange-200 rounded-2xl p-8 text-center">
-            <div class="text-5xl mb-4">🤔</div>
+            <x-icon name="question" class="w-12 h-12 mx-auto mb-4 text-orange-400" />
             <h2 class="text-xl font-bold text-orange-800 mb-2">Diagnosis Tidak Dapat Ditentukan</h2>
             <p class="text-orange-700 text-sm mb-4">Tingkat kecocokan gejala dengan knowledge base kurang dari 40%. Sistem tidak dapat memberikan diagnosis yang akurat.</p>
             <div class="text-left bg-white border border-orange-200 rounded-xl p-4 max-w-sm mx-auto mb-6">
@@ -143,15 +143,15 @@
                     @if($repairability && $repairability['can_self_repair'] && $d->repairGuides->isNotEmpty())
                         <a href="{{ route('repair-guides.show', $d->repairGuides->first()) }}"
                             class="flex items-center justify-center gap-2 bg-fm-primary text-white py-3 rounded-xl font-semibold hover:bg-fm-primary-dark text-sm">
-                            📖 Lihat Panduan Repair
+                            <x-icon name="book-open" class="w-4 h-4" /> Lihat Panduan Repair
                         </a>
                     @else
                         <div class="flex items-center justify-center gap-2 bg-gray-100 text-gray-400 py-3 rounded-xl font-semibold text-sm cursor-not-allowed">
-                            📖 Panduan Repair
+                            <x-icon name="book-open" class="w-4 h-4" /> Panduan Repair
                         </div>
                     @endif
                     <a href="{{ route('technicians.index') }}" class="flex items-center justify-center gap-2 border-2 border-fm-primary text-fm-primary py-3 rounded-xl font-semibold hover:bg-fm-primary/5 text-sm">
-                        🔧 Cari Teknisi
+                        <x-icon name="wrench" class="w-4 h-4" /> Cari Teknisi
                     </a>
                 </div>
             </div>

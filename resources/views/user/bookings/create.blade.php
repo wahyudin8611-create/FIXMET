@@ -24,7 +24,7 @@
 
         @if($consultation)
         <div class="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800">
-            📋 Booking ini terkait dengan diagnosis: <strong>{{ $consultation->diagnosis?->name ?? $consultation->consultation_code }}</strong>
+            <x-icon name="clipboard-list" class="inline w-4 h-4 mr-1 align-text-bottom" />Booking ini terkait dengan diagnosis: <strong>{{ $consultation->diagnosis?->name ?? $consultation->consultation_code }}</strong>
         </div>
         @endif
 

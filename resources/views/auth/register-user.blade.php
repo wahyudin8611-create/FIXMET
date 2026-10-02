@@ -49,13 +49,13 @@
             {{-- Benefits --}}
             <div class="space-y-4">
                 @foreach([
-                    ['⚡', 'Diagnosis dalam 2 menit', 'Jawab beberapa pertanyaan singkat'],
-                    ['🔍', 'Hasil akurat & detail', 'Confidence score + tingkat keparahan'],
-                    ['🛠️', 'Panduan perbaikan gratis', 'Step-by-step untuk perbaikan mandiri'],
-                    ['👨‍🔧', 'Teknisi terpercaya', '100+ teknisi terverifikasi siap membantu'],
+                    ['bolt', 'Diagnosis dalam 2 menit', 'Jawab beberapa pertanyaan singkat'],
+                    ['search', 'Hasil akurat & detail', 'Confidence score + tingkat keparahan'],
+                    ['wrench', 'Panduan perbaikan gratis', 'Step-by-step untuk perbaikan mandiri'],
+                    ['shield-check', 'Teknisi terpercaya', '100+ teknisi terverifikasi siap membantu'],
                 ] as [$icon, $title, $sub])
                 <div class="flex items-center gap-3">
-                    <span class="text-xl">{{ $icon }}</span>
+                    <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0"><x-icon :name="$icon" class="w-4 h-4 text-white" /></span>
                     <div>
                         <p class="text-white font-semibold text-sm">{{ $title }}</p>
                         <p class="text-emerald-300 text-xs">{{ $sub }}</p>

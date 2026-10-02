@@ -4,7 +4,7 @@
 @section('content')
 @if($bookings->isEmpty())
 <div class="bg-white border border-gray-200 rounded-xl p-12 text-center">
-    <div class="text-4xl mb-3">💬</div>
+    <x-icon name="chat" class="w-10 h-10 mx-auto mb-3 text-gray-300" />
     <h3 class="font-semibold text-gray-900 mb-1">Belum Ada Pesan</h3>
     <p class="text-gray-500 text-sm">Pesan akan muncul setelah Anda menerima booking</p>
 </div>

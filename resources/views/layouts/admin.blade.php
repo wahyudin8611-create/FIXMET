@@ -55,18 +55,18 @@
                 Dashboard
             </a>
             <div class="pt-2 pb-1 px-3 text-xs font-semibold text-gray-500 uppercase">Pengguna</div>
-            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10 {{ request()->routeIs('admin.users.*') ? 'bg-fm-primary/20 text-white' : '' }}">👥 Users</a>
-            <a href="{{ route('admin.technicians.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10 {{ request()->routeIs('admin.technicians.*') ? 'bg-fm-primary/20 text-white' : '' }}">🔧 Teknisi</a>
+            <a href="{{ route('admin.users.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10 {{ request()->routeIs('admin.users.*') ? 'bg-fm-primary/20 text-white' : '' }}"><x-icon name="users" class="w-4 h-4 shrink-0" /> Users</a>
+            <a href="{{ route('admin.technicians.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10 {{ request()->routeIs('admin.technicians.*') ? 'bg-fm-primary/20 text-white' : '' }}"><x-icon name="wrench" class="w-4 h-4 shrink-0" /> Teknisi</a>
             <div class="pt-2 pb-1 px-3 text-xs font-semibold text-gray-500 uppercase">Knowledge Base</div>
-            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10">📂 Kategori</a>
-            <a href="{{ route('admin.devices.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10">📱 Perangkat</a>
-            <a href="{{ route('admin.symptoms.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10">🩺 Gejala</a>
-            <a href="{{ route('admin.diagnoses.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10">🔍 Diagnosis</a>
-            <a href="{{ route('admin.rules.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10">⚙️ Rules</a>
-            <a href="{{ route('admin.solutions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10">💡 Solusi</a>
-            <a href="{{ route('admin.repair-guides.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10">📖 Repair Guide</a>
+            <a href="{{ route('admin.categories.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10"><x-icon name="folder" class="w-4 h-4 shrink-0" /> Kategori</a>
+            <a href="{{ route('admin.devices.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10"><x-icon name="device-mobile" class="w-4 h-4 shrink-0" /> Perangkat</a>
+            <a href="{{ route('admin.symptoms.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10"><x-icon name="clipboard-check" class="w-4 h-4 shrink-0" /> Gejala</a>
+            <a href="{{ route('admin.diagnoses.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10"><x-icon name="search" class="w-4 h-4 shrink-0" /> Diagnosis</a>
+            <a href="{{ route('admin.rules.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10"><x-icon name="cog" class="w-4 h-4 shrink-0" /> Rules</a>
+            <a href="{{ route('admin.solutions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10"><x-icon name="light-bulb" class="w-4 h-4 shrink-0" /> Solusi</a>
+            <a href="{{ route('admin.repair-guides.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10"><x-icon name="book-open" class="w-4 h-4 shrink-0" /> Repair Guide</a>
             <div class="pt-2 pb-1 px-3 text-xs font-semibold text-gray-500 uppercase">Aktivitas</div>
-            <a href="{{ route('admin.consultations.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10">💬 Konsultasi</a>
+            <a href="{{ route('admin.consultations.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-300 hover:bg-white/10"><x-icon name="chat" class="w-4 h-4 shrink-0" /> Konsultasi</a>
         </nav>
         <div class="p-4 border-t border-white/10">
             <div class="flex items-center gap-2 text-sm">

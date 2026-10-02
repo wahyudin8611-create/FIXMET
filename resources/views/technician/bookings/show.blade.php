@@ -72,7 +72,7 @@
 
     {{-- Chat --}}
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col h-96 md:h-auto">
-        <div class="p-3 border-b font-semibold text-gray-900 text-sm">💬 Chat</div>
+        <div class="p-3 border-b font-semibold text-gray-900 text-sm"><x-icon name="chat" class="inline w-4 h-4 mr-1 align-text-bottom" />Chat</div>
         <div class="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-50" id="chatBox">
             @foreach($booking->messages as $msg)
             <div class="flex {{ $msg->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">

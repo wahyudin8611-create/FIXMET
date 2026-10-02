@@ -4,7 +4,7 @@
 <div class="max-w-7xl mx-auto px-4 py-8">
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900">Selamat datang, {{ $user->name }}! 👋</h1>
+            <h1 class="text-2xl font-bold text-gray-900">Selamat datang, {{ $user->name }}!</h1>
             <p class="text-gray-500 text-sm mt-1">Perangkat ada masalah? Mulai diagnosis sekarang.</p>
         </div>
         <a href="{{ route('diagnosis.create') }}" class="bg-primary-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-primary-700 flex items-center gap-2">
@@ -16,13 +16,13 @@
     {{-- Stats --}}
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         @foreach([
-            ['Total Diagnosis', $stats['total_diagnosis'], 'bg-blue-50 text-blue-700', '🔍'],
-            ['Total Perbaikan', $stats['total_repair'], 'bg-green-50 text-green-700', '🔧'],
-            ['Booking Aktif', $stats['active_booking'], 'bg-yellow-50 text-yellow-700', '📅'],
-            ['Selesai', $stats['completed_repair'], 'bg-purple-50 text-purple-700', '✅'],
+            ['Total Diagnosis', $stats['total_diagnosis'], 'bg-blue-50 text-blue-700', 'search'],
+            ['Total Perbaikan', $stats['total_repair'], 'bg-green-50 text-green-700', 'wrench'],
+            ['Booking Aktif', $stats['active_booking'], 'bg-yellow-50 text-yellow-700', 'calendar'],
+            ['Selesai', $stats['completed_repair'], 'bg-purple-50 text-purple-700', 'check-circle'],
         ] as [$label, $value, $color, $icon])
         <div class="bg-white border border-gray-200 rounded-xl p-4">
-            <div class="text-2xl mb-1">{{ $icon }}</div>
+            <div class="w-9 h-9 rounded-lg flex items-center justify-center mb-2 {{ $color }}"><x-icon :name="$icon" class="w-5 h-5" /></div>
             <div class="text-2xl font-bold text-gray-900">{{ $value }}</div>
             <div class="text-sm text-gray-500">{{ $label }}</div>
         </div>

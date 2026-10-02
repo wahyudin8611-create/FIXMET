@@ -221,17 +221,17 @@
 
     <div class="grid md:grid-cols-4 gap-6">
         @foreach([
-            ['📷', '01', 'Upload Foto', 'Foto kerusakan perangkat dari berbagai sudut untuk analisis visual'],
-            ['🔍', '02', 'Jawab Gejala', 'Sistem pakar mengajukan pertanyaan Ya/Tidak yang presisi'],
-            ['📋', '03', 'Terima Diagnosis', 'Dapatkan hasil lengkap: nama kerusakan, tingkat keparahan, confidence score'],
-            ['🔧', '04', 'Ambil Tindakan', 'Ikuti panduan mandiri atau booking teknisi profesional terverifikasi'],
-        ] as [$emoji, $num, $title, $desc])
+            ['camera', '01', 'Upload Foto', 'Foto kerusakan perangkat dari berbagai sudut untuk analisis visual'],
+            ['search', '02', 'Jawab Gejala', 'Sistem pakar mengajukan pertanyaan Ya/Tidak yang presisi'],
+            ['clipboard-list', '03', 'Terima Diagnosis', 'Dapatkan hasil lengkap: nama kerusakan, tingkat keparahan, confidence score'],
+            ['wrench', '04', 'Ambil Tindakan', 'Ikuti panduan mandiri atau booking teknisi profesional terverifikasi'],
+        ] as [$icon, $num, $title, $desc])
         <div class="card-hover relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm group">
             <div class="absolute top-4 right-4 text-4xl font-black opacity-5 group-hover:opacity-10 transition-opacity step-number leading-none">
                 {{ $num }}
             </div>
-            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 text-2xl bg-fm-primary/5">
-                {{ $emoji }}
+            <div class="w-12 h-12 rounded-xl flex items-center justify-center mb-5 bg-fm-primary/5">
+                <x-icon :name="$icon" class="w-6 h-6 text-fm-primary" />
             </div>
             <div class="mb-1.5" style="font-size:.6875rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#D1D5DB;">Langkah {{ $num }}</div>
             <h3 class="font-bold text-gray-900 mb-2" style="font-size:.9375rem;letter-spacing:-.02em;">{{ $title }}</h3>
@@ -342,7 +342,7 @@
             <div class="relative z-10">
                 <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6"
                      style="background:rgba(61,139,122,0.2);border:1px solid rgba(61,139,122,0.3);color:#5BA897;font-size:.6875rem;font-weight:700;letter-spacing:.14em;">
-                    ✦ Gratis selamanya untuk pengguna
+                    <x-icon name="sparkles" class="inline w-3.5 h-3.5 mr-1 align-text-bottom" />Gratis selamanya untuk pengguna
                 </div>
                 <h2 class="text-white mb-5" style="font-size:clamp(1.75rem,4vw,2.5rem);font-weight:800;letter-spacing:-.03em;line-height:1.1;text-wrap:balance;">
                     Siap mendiagnosa<br>perangkat Anda?
@@ -376,7 +376,7 @@
                 </div>
 
                 <div class="mt-10 flex flex-wrap items-center justify-center gap-6">
-                    @foreach(['✓ Gratis untuk pengguna', '✓ Data terenkripsi', '✓ 100+ teknisi aktif', '✓ Akurasi 95%+'] as $badge)
+                    @foreach(['Gratis untuk pengguna', 'Data terenkripsi', '100+ teknisi aktif', 'Akurasi 95%+'] as $badge)
                     <span class="text-slate-500 font-medium" style="font-size:.8125rem;">{{ $badge }}</span>
                     @endforeach
                 </div>

@@ -79,7 +79,7 @@
         @if($booking->review)
         <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-5 mb-5">
             <h2 class="font-semibold text-gray-900 mb-1">Ulasan Anda</h2>
-            <div class="text-yellow-500">{{ str_repeat('⭐', $booking->review->rating) }}</div>
+            <div class="flex gap-0.5 text-amber-400" aria-label="{{ $booking->review->rating }} dari 5 bintang">@for($star = 1; $star <= 5; $star++)<x-icon name="star" class="w-4 h-4 {{ $star <= $booking->review->rating ? '' : 'text-gray-200' }}" />@endfor</div>
             @if($booking->review->review)
             <p class="text-sm text-gray-700 mt-1">{{ $booking->review->review }}</p>
             @endif
@@ -93,7 +93,7 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Rating <span class="text-red-500">*</span></label>
                     <select name="rating" required class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
                         @for($i = 5; $i >= 1; $i--)
-                        <option value="{{ $i }}">{{ str_repeat('⭐', $i) }} ({{ $i }})</option>
+                        <option value="{{ $i }}">{{ $i }} dari 5</option>
                         @endfor
                     </select>
                 </div>
@@ -110,7 +110,7 @@
     {{-- Chat --}}
     @if(in_array($booking->status, ['accepted', 'scheduled', 'in_progress', 'completed']))
     <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-        <div class="p-4 border-b font-semibold text-gray-900">💬 Chat dengan Teknisi</div>
+        <div class="p-4 border-b font-semibold text-gray-900"><x-icon name="chat" class="inline w-4 h-4 mr-1 align-text-bottom" />Chat dengan Teknisi</div>
         <div class="h-64 overflow-y-auto p-4 space-y-3 bg-gray-50" id="chatBox">
             @foreach($booking->messages as $msg)
             <div class="flex {{ $msg->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">

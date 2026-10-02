@@ -22,7 +22,7 @@
             <div><span class="text-gray-500">Area Layanan:</span><br><strong>{{ $technician->service_area }}</strong></div>
             <div><span class="text-gray-500">Pengalaman:</span><br><strong>{{ $technician->experience_years }} tahun</strong></div>
             <div><span class="text-gray-500">Biaya:</span><br><strong>Rp {{ number_format($technician->service_fee, 0, ',', '.') }}</strong></div>
-            <div><span class="text-gray-500">Rating:</span><br><strong>⭐ {{ number_format($technician->rating, 1) }}</strong></div>
+            <div><span class="text-gray-500">Rating:</span><br><strong class="inline-flex items-center gap-1"><x-icon name="star" class="w-4 h-4 text-amber-400" /> {{ number_format($technician->rating, 1) }}</strong></div>
             <div><span class="text-gray-500">Job Selesai:</span><br><strong>{{ $technician->completed_jobs }}</strong></div>
         </div>
 

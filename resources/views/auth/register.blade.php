@@ -40,7 +40,7 @@
         <div class="text-center mb-10 md:mb-12">
             <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold mb-5 tracking-wide"
                  style="background: rgba(61,139,122,0.1); color: #2A6356; border: 1px solid rgba(61,139,122,0.2);">
-                ✦ Pilih peran Anda
+                <x-icon name="sparkles" class="w-3.5 h-3.5" /> Pilih peran Anda
             </div>
             <h1 class="text-3xl md:text-4xl font-extrabold text-gray-900 mb-3 tracking-tight">
                 Daftar sebagai apa?

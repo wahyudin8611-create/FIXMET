@@ -22,7 +22,7 @@
 
         @if($b->consultation)
         <div class="mt-2 text-xs text-blue-700 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
-            📋 Diagnosis: <strong>{{ $b->consultation->diagnosis?->name ?? 'Belum ada diagnosis' }}</strong>
+            <x-icon name="clipboard-list" class="inline w-4 h-4 mr-1 align-text-bottom" />Diagnosis: <strong>{{ $b->consultation->diagnosis?->name ?? 'Belum ada diagnosis' }}</strong>
             ({{ $b->consultation->device->name }})
         </div>
         @endif
@@ -38,10 +38,10 @@
         <div class="flex gap-2 mt-4">
             <form action="{{ route('technician.bookings.accept', $b->id) }}" method="POST">
                 @csrf @method('PATCH')
-                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700">✓ Terima</button>
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700"><x-icon name="check" class="inline w-4 h-4 mr-1 align-text-bottom" />Terima</button>
             </form>
             <button onclick="document.getElementById('reject-{{ $b->id }}').classList.toggle('hidden')"
-                class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-100">✗ Tolak</button>
+                class="bg-red-50 text-red-600 border border-red-200 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-100"><x-icon name="x" class="inline w-4 h-4 mr-1 align-text-bottom" />Tolak</button>
             <a href="{{ route('technician.bookings.show', $b->id) }}" class="border border-gray-200 px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50">Detail</a>
         </div>
 
@@ -56,7 +56,7 @@
     </div>
     @empty
     <div class="bg-white border border-gray-200 rounded-xl p-10 text-center">
-        <div class="text-4xl mb-3">📥</div>
+        <x-icon name="inbox" class="w-10 h-10 mx-auto mb-3 text-gray-300" />
         <p class="text-gray-500">Tidak ada permintaan baru</p>
     </div>
     @endforelse

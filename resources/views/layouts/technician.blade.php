@@ -49,11 +49,11 @@
             </a>
         </div>
         <nav class="flex-1 py-4 px-3 space-y-1 text-sm">
-            <a href="{{ route('technician.dashboard') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('technician.dashboard') ? 'bg-fm-primary/10 text-fm-primary font-medium' : 'text-gray-700' }}">🏠 Dashboard</a>
-            <a href="{{ route('technician.requests') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700">📥 Permintaan Baru</a>
-            <a href="{{ route('technician.bookings.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700">📋 Booking</a>
-            <a href="{{ route('technician.messages.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700">💬 Pesan</a>
-            <a href="{{ route('technician.profile.edit') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700">👤 Profil</a>
+            <a href="{{ route('technician.dashboard') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('technician.dashboard') ? 'bg-fm-primary/10 text-fm-primary font-medium' : 'text-gray-700' }}"><x-icon name="home" class="w-4 h-4 shrink-0" /> Dashboard</a>
+            <a href="{{ route('technician.requests') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700"><x-icon name="inbox" class="w-4 h-4 shrink-0" /> Permintaan Baru</a>
+            <a href="{{ route('technician.bookings.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700"><x-icon name="clipboard-list" class="w-4 h-4 shrink-0" /> Booking</a>
+            <a href="{{ route('technician.messages.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700"><x-icon name="chat" class="w-4 h-4 shrink-0" /> Pesan</a>
+            <a href="{{ route('technician.profile.edit') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700"><x-icon name="user" class="w-4 h-4 shrink-0" /> Profil</a>
         </nav>
         <div class="p-4 border-t">
             <div class="flex items-center gap-2 text-sm mb-2">

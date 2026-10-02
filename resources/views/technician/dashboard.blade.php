@@ -5,7 +5,7 @@
 
 @if($technician->status === 'pending')
 <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
-    <p class="text-yellow-700 font-medium">⏳ Profil Anda sedang menunggu verifikasi admin.</p>
+    <p class="text-yellow-700 font-medium"><x-icon name="clock" class="inline w-4 h-4 mr-1 align-text-bottom" />Profil Anda sedang menunggu verifikasi admin.</p>
 </div>
 @endif
 
@@ -15,7 +15,7 @@
         ['Permintaan Baru', $stats['pending'], 'bg-yellow-50 text-yellow-700'],
         ['Sedang Dikerjakan', $stats['in_progress'], 'bg-blue-50 text-blue-700'],
         ['Selesai', $stats['completed'], 'bg-green-50 text-green-700'],
-        ['Rating', number_format($stats['rating'], 1) . ' ⭐', 'bg-purple-50 text-purple-700'],
+        ['Rating', number_format($stats['rating'], 1) . ' / 5', 'bg-purple-50 text-purple-700'],
     ] as [$label, $value, $color])
     <div class="bg-white border border-gray-200 rounded-xl p-4">
         <div class="text-2xl font-bold text-gray-900 {{ $color }} px-2 py-1 rounded-lg w-fit mb-1">{{ $value }}</div>

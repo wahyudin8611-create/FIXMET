@@ -52,13 +52,13 @@
             {{-- Feature pills --}}
             <div class="space-y-3">
                 @foreach([
-                    ['🔧', 'Sistem Pakar', 'Forward chaining + confidence score'],
-                    ['👨‍🔧', 'Teknisi Terverifikasi', 'Ribuan teknisi profesional di seluruh Indonesia'],
-                    ['📖', 'Panduan Perbaikan', 'Ribuan panduan step-by-step untuk DIY'],
+                    ['cog', 'Sistem Pakar', 'Forward chaining + confidence score'],
+                    ['shield-check', 'Teknisi Terverifikasi', 'Ribuan teknisi profesional di seluruh Indonesia'],
+                    ['book-open', 'Panduan Perbaikan', 'Ribuan panduan step-by-step untuk DIY'],
                 ] as [$icon, $title, $sub])
                 <div class="flex items-center gap-3 p-3 rounded-xl"
                      style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.08);">
-                    <span class="text-2xl">{{ $icon }}</span>
+                    <span class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0"><x-icon :name="$icon" class="w-5 h-5 text-white" /></span>
                     <div>
                         <p class="text-white font-semibold text-sm">{{ $title }}</p>
                         <p class="text-slate-500 text-xs">{{ $sub }}</p>

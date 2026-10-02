@@ -94,13 +94,13 @@
                     <div style="height:100%;display:flex;flex-direction:column;gap:10px;justify-content:center;">
                         <p style="font-size:11px;font-weight:700;color:#3D8B7A;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">Jalur Logika Sistem Pakar</p>
                         @foreach([
-                            ['AC tidak dingin', '#1F2937', '#E8F0EB', '#3D8B7A', '✓'],
-                            ['Kompresor berbunyi keras', '#1F2937', '#E8F0EB', '#3D8B7A', '✓'],
-                            ['Freon sudah dicek (tidak habis)', '#6B7280', '#F5F6F3', '#9CA3AF', '×'],
-                            ['Filter bersih', '#6B7280', '#F5F6F3', '#9CA3AF', '×'],
+                            ['AC tidak dingin', '#1F2937', '#E8F0EB', '#3D8B7A', 'check'],
+                            ['Kompresor berbunyi keras', '#1F2937', '#E8F0EB', '#3D8B7A', 'check'],
+                            ['Freon sudah dicek (tidak habis)', '#6B7280', '#F5F6F3', '#9CA3AF', 'x'],
+                            ['Filter bersih', '#6B7280', '#F5F6F3', '#9CA3AF', 'x'],
                         ] as [$text, $txtColor, $bg, $dotColor, $icon])
                         <div style="display:flex;align-items:center;gap:10px;background:{{ $bg }};border-radius:10px;padding:9px 12px;">
-                            <span style="width:20px;height:20px;border-radius:50%;background:{{ $dotColor }};display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff;font-weight:700;">{{ $icon }}</span>
+                            <span style="width:20px;height:20px;border-radius:50%;background:{{ $dotColor }};display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#fff;"><x-icon :name="$icon" class="w-3 h-3" /></span>
                             <span style="color:{{ $txtColor }};font-size:13px;">{{ $text }}</span>
                         </div>
                         @endforeach

@@ -23,7 +23,7 @@
         </a>
         @empty
         <div class="p-10 text-center">
-            <div class="text-4xl mb-3">🔍</div>
+            <x-icon name="search" class="w-10 h-10 mx-auto mb-3 text-gray-300" />
             <p class="text-gray-500">Belum ada diagnosis</p>
             <a href="{{ route('diagnosis.create') }}" class="inline-block mt-3 text-primary-600 font-medium text-sm hover:underline">Mulai diagnosis pertama</a>
         </div>
