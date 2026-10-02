@@ -70,6 +70,7 @@ class DatabaseSeeder extends Seeder
             'rating' => 4.8,
             'completed_jobs' => 150,
             'status' => 'verified',
+            'is_verified' => true,
             'is_available' => true,
         ]);
 
@@ -83,6 +84,7 @@ class DatabaseSeeder extends Seeder
             'rating' => 4.6,
             'completed_jobs' => 98,
             'status' => 'verified',
+            'is_verified' => true,
             'is_available' => true,
         ]);
 
@@ -257,5 +259,7 @@ class DatabaseSeeder extends Seeder
         RepairStep::create(['repair_guide_id' => $guide1->id, 'step_number' => 3, 'title' => 'Bersihkan Debu dari Kipas dan Heatsink', 'description' => 'Gunakan kuas halus untuk menyapu debu. Arahkan blower udara dari dalam ke luar untuk mendorong debu keluar dari ventilasi.', 'warning' => 'Jangan gunakan tekanan udara terlalu kuat agar bearing kipas tidak rusak.']);
         RepairStep::create(['repair_guide_id' => $guide1->id, 'step_number' => 4, 'title' => 'Ganti Thermal Paste', 'description' => 'Lepaskan heatsink (biasanya 4 baut). Bersihkan thermal paste lama dari CPU dan heatsink menggunakan alkohol isopropil. Oleskan thermal paste baru sebesar biji jagung di tengah CPU, biarkan heatsink menyebarkannya saat dipasang.', 'warning' => 'Jangan oleskan thermal paste terlalu banyak — bisa mengalir ke komponen lain.']);
         RepairStep::create(['repair_guide_id' => $guide1->id, 'step_number' => 5, 'title' => 'Pasang Kembali dan Uji', 'description' => 'Pasang kembali heatsink, panel bawah, dan baterai. Nyalakan laptop dan cek suhu menggunakan aplikasi seperti HWiNFO64 atau Core Temp.']);
+
+        $this->call(KnowledgeBaseSeeder::class);
     }
 }
