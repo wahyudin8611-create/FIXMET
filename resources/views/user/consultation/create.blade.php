@@ -9,7 +9,7 @@
     </div>
 
     <form action="{{ route('diagnosis.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" id="diagnosisForm"
-        x-data="{ submitting: false }" @submit="submitting = true" @pageshow.window="submitting = false">
+        x-data="photoPicker()" @submit="submitting = true" @pageshow.window="submitting = false">
         @csrf
 
         {{-- Photo Upload --}}
@@ -26,14 +26,27 @@
                 </ul>
             </div>
 
-            <input type="file" name="images[]" id="imageInput" multiple accept="image/jpeg,image/png,image/webp" class="hidden" onchange="previewImages(event)">
-            <div id="dropZone" onclick="document.getElementById('imageInput').click()"
-                class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-primary-400 hover:bg-primary-50 transition">
+            <input type="file" name="images[]" id="imageInput" x-ref="input" multiple accept="image/jpeg,image/png,image/webp" class="hidden" @change="addPhotos($event.target.files)">
+            <div id="dropZone" @click="$refs.input.click()"
+                @dragover.prevent="dragging = true" @dragleave.prevent="dragging = false"
+                @drop.prevent="dragging = false; addPhotos($event.dataTransfer.files)"
+                :class="dragging ? 'border-primary-500 bg-primary-50' : 'border-gray-300'"
+                class="border-2 border-dashed rounded-xl p-8 text-center cursor-pointer hover:border-primary-400 hover:bg-primary-50 transition">
                 <svg class="w-10 h-10 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 <p class="text-sm text-gray-500">Klik untuk upload foto</p>
                 <p class="text-xs text-gray-400 mt-1">atau drag & drop di sini</p>
             </div>
-            <div id="imagePreview" class="grid grid-cols-3 gap-2 mt-3"></div>
+            <div id="imagePreview" class="grid grid-cols-3 gap-2 mt-3">
+                <template x-for="(photo, index) in photos" :key="photo.url">
+                    <div class="relative">
+                        <img :src="photo.url" :alt="'Foto ' + (index + 1)" class="w-full h-24 object-cover rounded-lg border border-gray-200">
+                        <button type="button" @click="removePhoto(index)" :aria-label="'Hapus foto ' + (index + 1)"
+                            class="absolute top-1 right-1 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-600 transition">
+                            <x-icon name="x" class="w-4 h-4" />
+                        </button>
+                    </div>
+                </template>
+            </div>
             @error('images') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             @error('images.*') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
         </div>
@@ -67,25 +80,41 @@
 
 @push('scripts')
 <script>
-function previewImages(e) {
-    const preview = document.getElementById('imagePreview');
-    preview.innerHTML = '';
-    const files = e.target.files;
-    if (files.length > 5) {
-        alert('Maksimal 5 foto');
-        e.target.value = '';
-        return;
-    }
-    Array.from(files).forEach(file => {
-        const reader = new FileReader();
-        reader.onload = ev => {
-            const div = document.createElement('div');
-            div.className = 'relative';
-            div.innerHTML = `<img src="${ev.target.result}" class="w-full h-24 object-cover rounded-lg border border-gray-200">`;
-            preview.appendChild(div);
-        };
-        reader.readAsDataURL(file);
-    });
+/**
+ * Keeps the chosen or dropped photos in a list so each one can be removed,
+ * and mirrors that list into the real file input that the form submits.
+ */
+function photoPicker() {
+    return {
+        submitting: false,
+        dragging: false,
+        maxPhotos: 5,
+        allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        photos: [],
+        addPhotos(fileList) {
+            const files = Array.from(fileList).filter(file => this.allowedTypes.includes(file.type));
+            if (files.length < fileList.length) {
+                alert('Hanya foto JPG, PNG, atau WebP yang bisa diunggah');
+            }
+            if (this.photos.length + files.length > this.maxPhotos) {
+                alert('Maksimal ' + this.maxPhotos + ' foto');
+            }
+            files.slice(0, this.maxPhotos - this.photos.length).forEach(file => {
+                this.photos.push({ file, url: URL.createObjectURL(file) });
+            });
+            this.syncInput();
+        },
+        removePhoto(index) {
+            URL.revokeObjectURL(this.photos[index].url);
+            this.photos.splice(index, 1);
+            this.syncInput();
+        },
+        syncInput() {
+            const transfer = new DataTransfer();
+            this.photos.forEach(photo => transfer.items.add(photo.file));
+            this.$refs.input.files = transfer.files;
+        },
+    };
 }
 </script>
 @endpush

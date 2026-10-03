@@ -2,7 +2,7 @@
      style="background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); border-color: rgba(0,0,0,0.06);"
      x-data="{ mobileOpen: false, userOpen: false, scrolled: false }"
      x-init="window.addEventListener('scroll', () => { scrolled = window.scrollY > 10 })"
-     :style="scrolled ? 'box-shadow: 0 1px 20px rgba(0,0,0,0.08)' : ''">
+     :class="scrolled ? 'shadow-[0_1px_20px_rgba(0,0,0,0.08)]' : ''">
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
