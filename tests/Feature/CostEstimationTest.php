@@ -121,12 +121,25 @@ class CostEstimationTest extends TestCase
         $this->verifiedTechnician(100_000);
         $consultation = $this->laptopConsultation('high');
 
-        $this->get(route('technicians.index', ['consultation' => $consultation->id]))
+        $this->get(route('technicians.index', ['consultation' => $consultation->access_token]))
             ->assertOk()
             ->assertSee('Estimasi Kerusakan:')
             ->assertSee('Kerusakan Berat')
             ->assertSee('Rp1.350.000')
             ->assertSee('Rp2.950.000');
+    }
+
+    public function test_guest_consultation_cannot_be_opened_by_guessing_its_id(): void
+    {
+        $this->verifiedTechnician(100_000);
+        $consultation = $this->laptopConsultation('high');
+
+        $this->get(route('technicians.index', ['consultation' => $consultation->id]))
+            ->assertOk()
+            ->assertDontSee('Estimasi Kerusakan:')
+            ->assertSee('Analisis Kerusakan Dahulu');
+
+        $this->assertNull($consultation->refresh()->cost_estimate);
     }
 
     public function test_price_is_locked_until_the_user_analyses_the_damage(): void

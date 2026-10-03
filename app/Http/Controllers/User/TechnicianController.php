@@ -49,6 +49,8 @@ class TechnicianController extends Controller
     /**
      * Konsultasi yang boleh dilihat penampil saat ini (mengikuti aturan
      * ConsultationPolicy: tamu lewat token/link, pemilik, atau admin).
+     * Dicari lewat access_token, bukan id berurutan, agar diagnosis tamu
+     * lain tidak bisa ditebak.
      */
     private function consultationInContext(Request $request): ?Consultation
     {
@@ -56,7 +58,9 @@ class TechnicianController extends Controller
             return null;
         }
 
-        $consultation = Consultation::with('device.category', 'diagnosis')->find($request->consultation);
+        $consultation = Consultation::with('device.category', 'diagnosis')
+            ->where('access_token', $request->string('consultation'))
+            ->first();
 
         if (! $consultation || $consultation->status === 'in_progress') {
             return null;

@@ -41,7 +41,7 @@
                     <li>Konsultasikan langsung dengan teknisi</li>
                 </ul>
             </div>
-            <a href="{{ route('technicians.index', ['consultation' => $consultation->id]) }}" class="inline-block bg-orange-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-orange-700">Cari Teknisi</a>
+            <a href="{{ route('technicians.index', ['consultation' => $consultation->access_token]) }}" class="inline-block bg-orange-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-orange-700">Cari Teknisi</a>
         </div>
 
         <div class="mt-5">
@@ -154,7 +154,7 @@
                             <x-icon name="book-open" class="w-4 h-4" /> Panduan Repair
                         </div>
                     @endif
-                    <a href="{{ route('technicians.index', ['consultation' => $consultation->id]) }}" class="flex items-center justify-center gap-2 border-2 border-fm-primary text-fm-primary py-3 rounded-xl font-semibold hover:bg-fm-primary/5 text-sm">
+                    <a href="{{ route('technicians.index', ['consultation' => $consultation->access_token]) }}" class="flex items-center justify-center gap-2 border-2 border-fm-primary text-fm-primary py-3 rounded-xl font-semibold hover:bg-fm-primary/5 text-sm">
                         <x-icon name="wrench" class="w-4 h-4" /> Cari Teknisi
                     </a>
                 </div>
