@@ -44,10 +44,10 @@
         window.Echo = new Echo({
             broadcaster: 'pusher',
             key: @json(config('broadcasting.connections.reverb.key')),
-            wsHost: @json(config('broadcasting.connections.reverb.options.host')),
-            wsPort: {{ (int) config('broadcasting.connections.reverb.options.port', 8080) }},
-            wssPort: {{ (int) config('broadcasting.connections.reverb.options.port', 8080) }},
-            forceTLS: @json(config('broadcasting.connections.reverb.options.scheme') === 'https'),
+            wsHost: @json(config('broadcasting.connections.reverb.client.host')),
+            wsPort: {{ (int) config('broadcasting.connections.reverb.client.port', 8080) }},
+            wssPort: {{ (int) config('broadcasting.connections.reverb.client.port', 8080) }},
+            forceTLS: @json(config('broadcasting.connections.reverb.client.scheme') === 'https'),
             enabledTransports: ['ws', 'wss'],
             disableStats: true,
             cluster: 'mt1', // wajib diisi oleh pusher-js walau tak dipakai dengan host custom

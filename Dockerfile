@@ -5,7 +5,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends libpng-dev libjpeg62-turbo-dev libwebp-dev libfreetype6-dev libzip-dev unzip \
     && docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
     && docker-php-ext-install gd zip \
-    && a2enmod rewrite headers \
+    && a2enmod rewrite headers proxy proxy_http proxy_wstunnel \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
@@ -18,6 +18,10 @@ RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-av
 
 # Up to 5 photos of 5 MB each, and time for the AI photo analysis
 RUN printf "upload_max_filesize=6M\npost_max_size=32M\nmax_file_uploads=10\nmax_execution_time=180\nmemory_limit=256M\nexpose_php=Off\n" > "$PHP_INI_DIR/conf.d/fixmate.ini"
+
+# Proxy WebSocket (/app) ke server Reverb lokal untuk live chat real-time
+COPY docker/reverb-proxy.conf /etc/apache2/conf-available/reverb-proxy.conf
+RUN a2enconf reverb-proxy
 
 WORKDIR /var/www/html
 
@@ -38,7 +42,20 @@ ENV APP_NAME=FIXMATE \
     CACHE_STORE=database \
     QUEUE_CONNECTION=sync \
     FILESYSTEM_DISK=local \
-    AI_PROVIDER=gemini
+    AI_PROVIDER=gemini \
+    # --- Live chat real-time (Reverb) ---
+    BROADCAST_CONNECTION=reverb \
+    # Reverb mendengarkan di dalam container
+    REVERB_SERVER_HOST=0.0.0.0 \
+    REVERB_SERVER_PORT=8080 \
+    # Publikasi sisi-server (Laravel → Reverb) lewat localhost
+    REVERB_HOST=127.0.0.1 \
+    REVERB_PORT=8080 \
+    REVERB_SCHEME=http \
+    # Alamat untuk browser (di-proxy Apache → Reverb). Override di Render bila domain berubah.
+    REVERB_CLIENT_HOST=fixmate.site \
+    REVERB_CLIENT_PORT=443 \
+    REVERB_CLIENT_SCHEME=https
 
 RUN sed -i 's/$//' docker-start.sh
 
