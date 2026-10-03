@@ -6,7 +6,7 @@
     <p class="text-sm text-gray-600">Total: {{ $diagnoses->total() }} diagnosis</p>
     <a href="{{ route('admin.diagnoses.create') }}" class="bg-primary-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-primary-700">+ Tambah Diagnosis</a>
 </div>
-<div class="bg-white border border-gray-200 rounded-xl">
+<div class="bg-white border border-gray-200 rounded-xl overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 border-b">
             <tr>

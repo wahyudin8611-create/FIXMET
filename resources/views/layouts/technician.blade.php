@@ -38,16 +38,27 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }</style>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+        [x-cloak] { display: none !important; }
+    </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50" x-data="{ sidebarOpen: false }" @keydown.escape.window="sidebarOpen = false">
 <div class="flex h-screen overflow-hidden">
-    <aside class="w-60 bg-white border-r border-gray-200 flex flex-col">
-        <div class="p-4 border-b">
+    {{-- On phones the sidebar slides in over the page; from lg it is always visible --}}
+    <div x-show="sidebarOpen" x-cloak x-transition.opacity @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/40 lg:hidden"></div>
+
+    <aside class="fixed inset-y-0 left-0 z-40 w-60 bg-white border-r border-gray-200 flex flex-col transition-transform duration-200 -translate-x-full lg:static lg:translate-x-0"
+           :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
+        <div class="p-4 border-b flex items-center justify-between">
             <a href="{{ route('technician.dashboard') }}" class="flex items-center gap-2">
                 <x-logo-mark class="w-7 h-7" />
                 <span class="font-bold text-fm-dark">FIX<span class="text-fm-primary">MATE</span></span>
             </a>
+            <button type="button" @click="sidebarOpen = false" class="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100" aria-label="Tutup menu">
+                <x-icon name="x" class="w-5 h-5" />
+            </button>
         </div>
         <nav class="flex-1 py-4 px-3 space-y-1 text-sm">
             <a href="{{ route('technician.dashboard') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('technician.dashboard') ? 'bg-fm-primary/10 text-fm-primary font-medium' : 'text-gray-700' }}"><x-icon name="home" class="w-4 h-4 shrink-0" /> Dashboard</a>
@@ -68,11 +79,14 @@
         </div>
     </aside>
 
-    <div class="flex-1 overflow-y-auto">
-        <header class="bg-white border-b px-6 py-4">
+    <div class="flex-1 min-w-0 overflow-y-auto">
+        <header class="bg-white border-b px-4 sm:px-6 py-4 flex items-center gap-3">
+            <button type="button" @click="sidebarOpen = true" class="lg:hidden -ml-1 p-1.5 rounded-lg text-gray-600 hover:bg-gray-100" aria-label="Buka menu">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
             <h1 class="text-lg font-semibold text-fm-dark">@yield('page-title', 'Dashboard')</h1>
         </header>
-        <main class="p-6">
+        <main class="p-4 sm:p-6">
             @if(session('success'))
                 <div class="mb-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-3 text-sm">{{ session('success') }}</div>
             @endif
@@ -83,5 +97,6 @@
         </main>
     </div>
 </div>
+@stack('scripts')
 </body>
 </html>

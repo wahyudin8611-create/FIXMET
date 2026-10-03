@@ -2,7 +2,7 @@
 @section('title', 'Teknisi')
 @section('page-title', 'Manajemen Teknisi')
 @section('content')
-<div class="bg-white border border-gray-200 rounded-xl">
+<div class="bg-white border border-gray-200 rounded-xl overflow-x-auto">
     <table class="w-full text-sm">
         <thead class="bg-gray-50 border-b">
             <tr>
