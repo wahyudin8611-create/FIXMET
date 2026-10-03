@@ -32,6 +32,11 @@ COPY . .
 RUN composer dump-autoload --optimize --no-dev --no-interaction \
     && chown -R www-data:www-data storage bootstrap/cache database
 
+# Live chat real-time (Reverb):
+#   - REVERB_SERVER_*  : alamat Reverb mendengarkan di dalam container
+#   - REVERB_*         : target publikasi sisi-server (Laravel -> Reverb) via localhost
+#   - REVERB_CLIENT_*  : alamat untuk browser (di-proxy Apache -> Reverb);
+#                        override di Render bila domain berubah
 ENV APP_NAME=FIXMATE \
     APP_ENV=production \
     APP_DEBUG=false \
@@ -43,16 +48,12 @@ ENV APP_NAME=FIXMATE \
     QUEUE_CONNECTION=sync \
     FILESYSTEM_DISK=local \
     AI_PROVIDER=gemini \
-    # --- Live chat real-time (Reverb) ---
     BROADCAST_CONNECTION=reverb \
-    # Reverb mendengarkan di dalam container
     REVERB_SERVER_HOST=0.0.0.0 \
     REVERB_SERVER_PORT=8080 \
-    # Publikasi sisi-server (Laravel → Reverb) lewat localhost
     REVERB_HOST=127.0.0.1 \
     REVERB_PORT=8080 \
     REVERB_SCHEME=http \
-    # Alamat untuk browser (di-proxy Apache → Reverb). Override di Render bila domain berubah.
     REVERB_CLIENT_HOST=fixmate.site \
     REVERB_CLIENT_PORT=443 \
     REVERB_CLIENT_SCHEME=https
