@@ -26,6 +26,7 @@ class Consultation extends Model
         'user_id', 'device_id', 'diagnosis_id', 'consultation_code',
         'device_brand', 'device_model', 'device_age', 'initial_complaint',
         'status', 'result', 'confidence', 'all_diagnoses', 'visual_evidence',
+        'cost_estimate',
     ];
 
     protected $hidden = ['access_token'];
@@ -43,6 +44,7 @@ class Consultation extends Model
             'confidence' => 'decimal:2',
             'all_diagnoses' => 'array',
             'visual_evidence' => 'array',
+            'cost_estimate' => 'array',
         ];
     }
 
