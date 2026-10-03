@@ -118,11 +118,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(match (Auth::user()->role) {
-                'admin' => route('admin.dashboard'),
-                'technician' => route('technician.dashboard'),
-                default => route('user.dashboard'),
-            });
+            return redirect()->intended(Auth::user()->dashboardUrl());
         }
 
         return back()->withErrors(['email' => 'Email atau password tidak valid.'])->onlyInput('email');

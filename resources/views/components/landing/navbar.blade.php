@@ -13,7 +13,7 @@
         <div class="hidden sm:flex items-center gap-2.5">
             <span class="opacity-60 font-medium">Diagnosis perangkat tersedia 24/7</span>
             <span class="opacity-40">·</span>
-            <a href="{{ route('register') }}" class="font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">Mulai sekarang</a>
+            <a href="{{ auth()->check() ? route('diagnosis.create') : route('register') }}" class="font-bold underline underline-offset-2 hover:opacity-80 transition-opacity">Mulai sekarang</a>
         </div>
     </div>
 </div>
@@ -46,9 +46,16 @@
 
             {{-- Desktop buttons --}}
             <div class="hidden lg:flex items-center gap-3">
+                @auth
+                <a href="{{ auth()->user()->dashboardUrl() }}" class="flex items-center gap-2 text-fm-dark hover:text-fm-primary font-semibold transition-colors" style="font-size:.875rem;letter-spacing:-.005em;" title="Buka dashboard">
+                    <img src="{{ auth()->user()->profile_photo_url }}" class="w-8 h-8 rounded-lg object-cover ring-2 ring-gray-100" alt="">
+                    {{ Str::words(auth()->user()->name, 1, '') }}
+                </a>
+                @else
                 <a href="{{ route('login') }}" class="text-fm-dark hover:text-fm-primary font-semibold transition-colors" style="font-size:.875rem;letter-spacing:-.005em;">
                     Masuk
                 </a>
+                @endauth
                 @auth
                 <a href="{{ route('diagnosis.create') }}" class="btn-primary text-sm py-2.5 px-5">Mulai Diagnosis</a>
                 @else
@@ -91,7 +98,11 @@
             @endforeach
         </div>
         <div class="flex flex-col gap-2.5 pt-4 border-t border-black/[.06]">
+            @auth
+            <a href="{{ auth()->user()->dashboardUrl() }}" class="btn-outline text-sm text-center">Dashboard</a>
+            @else
             <a href="{{ route('login') }}" class="btn-outline text-sm text-center">Masuk</a>
+            @endauth
             <a href="{{ route('diagnosis.create') }}" class="btn-primary text-sm text-center">Mulai Diagnosis</a>
         </div>
     </div>

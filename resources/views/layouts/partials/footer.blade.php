@@ -33,12 +33,21 @@
             <div>
                 <h4 class="text-white font-semibold text-sm mb-4">Mulai Sekarang</h4>
                 <div class="space-y-3">
+                    @auth
+                    <a href="{{ route('diagnosis.create') }}" class="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-bold text-white rounded-xl bg-fm-primary hover:bg-fm-primary-dark transition-all hover:-translate-y-0.5 hover:shadow-lg">
+                        Mulai Diagnosis
+                    </a>
+                    <a href="{{ auth()->user()->dashboardUrl() }}" class="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-semibold text-gray-300 rounded-xl border border-gray-700 hover:border-gray-500 hover:text-white transition-all">
+                        Dashboard
+                    </a>
+                    @else
                     <a href="{{ route('register') }}" class="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-bold text-white rounded-xl bg-fm-primary hover:bg-fm-primary-dark transition-all hover:-translate-y-0.5 hover:shadow-lg">
                         Daftar Gratis
                     </a>
                     <a href="{{ route('login') }}" class="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-semibold text-gray-300 rounded-xl border border-gray-700 hover:border-gray-500 hover:text-white transition-all">
                         Masuk Akun
                     </a>
+                    @endauth
                 </div>
             </div>
         </div>

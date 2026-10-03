@@ -39,6 +39,18 @@ class User extends Authenticatable
         return $this->role === 'user';
     }
 
+    /**
+     * The dashboard this user lands on, based on their role.
+     */
+    public function dashboardUrl(): string
+    {
+        return match ($this->role) {
+            'admin' => route('admin.dashboard'),
+            'technician' => route('technician.dashboard'),
+            default => route('user.dashboard'),
+        };
+    }
+
     public function technician()
     {
         return $this->hasOne(Technician::class);
@@ -67,8 +79,9 @@ class User extends Authenticatable
     public function getProfilePhotoUrlAttribute(): string
     {
         if ($this->profile_photo) {
-            return asset('storage/' . $this->profile_photo);
+            return asset('storage/'.$this->profile_photo);
         }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=2563eb&background=dbeafe';
+
+        return 'https://ui-avatars.com/api/?name='.urlencode($this->name).'&color=2563eb&background=dbeafe';
     }
 }

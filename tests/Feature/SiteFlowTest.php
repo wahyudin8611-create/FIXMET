@@ -55,6 +55,32 @@ class SiteFlowTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_guest_sees_the_login_link_on_the_home_page(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertSee('href="'.route('login').'"', false);
+    }
+
+    public function test_signed_in_user_sees_their_dashboard_instead_of_login_on_the_home_page(): void
+    {
+        $this->actingAs(User::factory()->create(['name' => 'Budi Santoso']))
+            ->get(route('home'))
+            ->assertOk()
+            ->assertDontSee('href="'.route('login').'"', false)
+            ->assertSee('href="'.route('user.dashboard').'"', false)
+            ->assertSee('Budi');
+    }
+
+    public function test_signed_in_technician_is_offered_the_technician_dashboard_instead_of_login(): void
+    {
+        $this->actingAs(User::factory()->technician()->create())
+            ->get(route('technicians.index'))
+            ->assertOk()
+            ->assertDontSee('href="'.route('login').'"', false)
+            ->assertSee('href="'.route('technician.dashboard').'"', false);
+    }
+
     public function test_admin_can_open_the_repair_guide_edit_page(): void
     {
         $category = Category::create(['name' => 'Smartphone']);

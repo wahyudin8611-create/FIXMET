@@ -15,7 +15,11 @@
                 </p>
                 <div class="flex gap-3">
                     <a href="{{ route('diagnosis.create') }}" class="btn-primary text-sm py-2 px-5">Mulai Diagnosis</a>
+                    @auth
+                    <a href="{{ auth()->user()->dashboardUrl() }}" class="btn-outline text-sm py-2 px-5">Dashboard</a>
+                    @else
                     <a href="{{ route('login') }}" class="btn-outline text-sm py-2 px-5">Masuk</a>
+                    @endauth
                 </div>
             </div>
 
@@ -33,9 +37,19 @@
             <div>
                 <p class="eyebrow text-fm-dark mb-5">Akun</p>
                 <ul class="space-y-3" role="list">
+                    @auth
+                    <li><a href="{{ auth()->user()->dashboardUrl() }}" class="text-fm-muted hover:text-fm-primary transition-colors" style="font-size:.875rem;">Dashboard</a></li>
+                    <li>
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-fm-muted hover:text-fm-primary transition-colors" style="font-size:.875rem;">Keluar</button>
+                        </form>
+                    </li>
+                    @else
                     @foreach([['login','Masuk'],['register','Daftar Pengguna'],['register.technician','Daftar Teknisi']] as [$route, $label])
                     <li><a href="{{ route($route) }}" class="text-fm-muted hover:text-fm-primary transition-colors" style="font-size:.875rem;">{{ $label }}</a></li>
                     @endforeach
+                    @endauth
                 </ul>
             </div>
 
