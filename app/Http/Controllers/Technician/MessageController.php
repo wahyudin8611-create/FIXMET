@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Technician;
 use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Message;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class MessageController extends Controller
 {
@@ -49,6 +51,13 @@ class MessageController extends Controller
 
         $meId = auth()->id();
 
+        // Membuka/menyegarkan ruang obrolan menandai pesan masuk sebagai dibaca,
+        // sehingga badge notifikasi pada sidebar otomatis berkurang.
+        $booking->messages()
+            ->where('sender_id', '!=', $meId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
         $messages = $booking->messages()
             ->orderBy('created_at')
             ->get()
@@ -60,6 +69,39 @@ class MessageController extends Controller
             ]);
 
         return response()->json(['messages' => $messages]);
+    }
+
+    /**
+     * Jumlah pesan belum dibaca untuk teknisi + pesan terbaru (untuk badge
+     * sidebar, toast, dan suara notifikasi).
+     */
+    public function unreadCount()
+    {
+        $technicianId = auth()->user()->technician?->id;
+
+        if (! $technicianId) {
+            return response()->json(['count' => 0, 'latest' => null]);
+        }
+
+        $unread = Message::query()
+            ->where('is_read', false)
+            ->where('sender_id', '!=', auth()->id())
+            ->whereHas('booking', fn ($q) => $q->where('technician_id', $technicianId));
+
+        $count = (clone $unread)->count();
+        $latest = $unread->with('sender')->latest()->first();
+
+        return response()->json([
+            'count' => $count,
+            'latest' => $latest ? [
+                'id' => $latest->id,
+                'booking_id' => $latest->booking_id,
+                'sender_name' => $latest->sender->name,
+                'sender_avatar' => $latest->sender->profile_photo_url,
+                'snippet' => Str::limit($latest->message, 60),
+                'url' => route('technician.bookings.show', $latest->booking_id),
+            ] : null,
+        ]);
     }
 
     private function authorizeBooking(Booking $booking): void

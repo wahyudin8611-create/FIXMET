@@ -62,20 +62,26 @@
 
     // --- Helper: toast in-app ----------------------------------------------
     const wrap = document.getElementById('fm-toast-wrap');
-    window.fmToast = function ({ title, body, avatar, url }) {
+    const escToast = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+    window.fmToast = function ({ title, body, avatar, url, actionLabel }) {
         if (!wrap) return;
         const el = document.createElement('div');
         el.className = 'fm-toast';
         el.innerHTML =
             (avatar ? '<img src="' + avatar + '" class="w-9 h-9 rounded-full object-cover shrink-0" alt="">' : '') +
             '<div class="min-w-0 flex-1">' +
-                '<div class="text-sm font-semibold text-gray-900 truncate">' + title + '</div>' +
-                '<div class="text-xs text-gray-500 truncate">' + body + '</div>' +
+                '<div class="text-sm font-semibold text-gray-900 truncate">' + escToast(title) + '</div>' +
+                '<div class="text-xs text-gray-500 truncate">' + escToast(body) + '</div>' +
+                (url ? '<button type="button" class="fm-toast-action mt-1.5 text-xs font-semibold text-fm-primary hover:underline">' + escToast(actionLabel || 'Buka Chat') + '</button>' : '') +
             '</div>';
-        if (url) el.addEventListener('click', () => { window.location.href = url; });
+        if (url) {
+            const go = (ev) => { ev.stopPropagation(); window.location.href = url; };
+            el.querySelector('.fm-toast-action')?.addEventListener('click', go);
+            el.addEventListener('click', () => { window.location.href = url; });
+        }
         wrap.appendChild(el);
         const close = () => { el.classList.add('fm-leaving'); setTimeout(() => el.remove(), 260); };
-        setTimeout(close, 5000);
+        setTimeout(close, 6000);
     };
 
     // --- Helper: OS/browser push notification -------------------------------
@@ -91,27 +97,7 @@
         } catch (e) {}
     };
 
-    const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
-
-    // --- Listener notifikasi GLOBAL per-pengguna ----------------------------
-    @auth
-    if (window.Echo) {
-        window.Echo.private('App.Models.User.{{ auth()->id() }}')
-            .listen('.message.sent', (e) => {
-                const onThisChat = window.__fmActiveBooking && String(window.__fmActiveBooking) === String(e.booking_id);
-                const snippet = e.message.length > 60 ? e.message.slice(0, 60) + '…' : e.message;
-
-                if (document.hidden) {
-                    // Tab tidak aktif → push notification OS.
-                    window.fmNotify({ title: e.sender_name, body: snippet, icon: e.sender_avatar, url: e.url });
-                } else if (!onThisChat) {
-                    // Sedang buka halaman lain → toast in-app.
-                    window.fmToast({ title: esc(e.sender_name), body: esc(snippet), avatar: e.sender_avatar, url: e.url });
-                }
-                // Jika sedang membuka chat booking ini & tab aktif → biarkan
-                // jendela chat yang menampilkannya (tanpa duplikasi notifikasi).
-            });
-    }
-    @endauth
+    // Notifikasi pesan masuk (toast/suara/push + badge) ditangani terpusat di
+    // partials/notifications.blade.php agar bekerja lewat polling maupun Echo.
 })();
 </script>

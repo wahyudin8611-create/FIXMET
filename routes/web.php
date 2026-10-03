@@ -61,6 +61,7 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
 
     // Messages
     Route::get('/messages', [User\MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/unread-count', [User\MessageController::class, 'unreadCount'])->name('messages.unread');
     Route::post('/messages/{booking}', [User\MessageController::class, 'send'])->name('messages.send');
     Route::get('/messages/{booking}/list', [User\MessageController::class, 'getMessages'])->name('messages.list');
 
@@ -89,6 +90,7 @@ Route::middleware(['auth', 'role:technician'])->prefix('technician')->name('tech
     Route::post('/bookings/{booking}/report', [Technician\RepairReportController::class, 'store'])->name('repair-reports.store');
 
     Route::get('/messages', [Technician\MessageController::class, 'index'])->name('messages.index');
+    Route::get('/messages/unread-count', [Technician\MessageController::class, 'unreadCount'])->name('messages.unread');
     Route::post('/messages/{booking}', [Technician\MessageController::class, 'send'])->name('messages.send');
     Route::get('/messages/{booking}/list', [Technician\MessageController::class, 'getMessages'])->name('messages.list');
 });

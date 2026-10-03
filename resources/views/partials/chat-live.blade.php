@@ -21,6 +21,7 @@
     const listUrl       = root.dataset.listUrl;
     const meAvatar      = root.dataset.meAvatar;
     const partnerAvatar = root.dataset.partnerAvatar;
+    const partnerLabel  = root.dataset.partnerLabel || 'Lawan bicara';
     const csrf          = document.querySelector('meta[name="csrf-token"]')?.content;
 
     // Tandai booking yang sedang dibuka agar notifikasi global tak menduplikasi.
@@ -90,7 +91,19 @@
                 box.appendChild(bubble(m));
             });
             scrollBottom();
+            // Membuka chat menandai pesan terbaca → perbarui badge sidebar.
+            window.fmRefreshUnread && window.fmRefreshUnread();
         } catch (e) { /* diam */ }
+    }
+
+    // Tandai pesan terbaca di server (via getMessages) lalu segarkan badge.
+    let markReadTimer = null;
+    function scheduleMarkRead() {
+        clearTimeout(markReadTimer);
+        markReadTimer = setTimeout(async () => {
+            try { await fetchMessages(); } catch (e) {}
+            window.fmRefreshUnread && window.fmRefreshUnread();
+        }, 1200);
     }
 
     // ---- Cadangan: polling saat WebSocket tidak tersambung -----------------
@@ -113,7 +126,10 @@
             typingEl.className = 'flex items-end gap-2 justify-start';
             typingEl.innerHTML =
                 '<img src="' + partnerAvatar + '" class="w-7 h-7 rounded-full object-cover shrink-0" alt="">' +
-                '<div class="fm-typing"><span></span><span></span><span></span></div>';
+                '<div class="flex flex-col gap-1">' +
+                    '<div class="fm-typing"><span></span><span></span><span></span></div>' +
+                    '<span class="text-[11px] text-gray-400">' + esc(partnerLabel) + ' sedang mengetik…</span>' +
+                '</div>';
         }
         const stick = nearBottom();
         box.appendChild(typingEl);
@@ -134,6 +150,7 @@
             // Lewati bila ini pesan kita sendiri (jaga-jaga bila X-Socket-ID tak terkirim).
             if (String(e.sender_id) === String(meId)) return;
             appendMessage({ id: e.id, message: e.message, mine: false, time: e.time });
+            scheduleMarkRead(); // tandai terbaca karena chat sedang dibuka
         });
 
         // Lawan bicara mengetik → tampilkan animasi.

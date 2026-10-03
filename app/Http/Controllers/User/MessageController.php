@@ -5,7 +5,9 @@ namespace App\Http\Controllers\User;
 use App\Events\MessageSent;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Models\Message;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Str;
 
 class MessageController extends Controller
 {
@@ -49,6 +51,12 @@ class MessageController extends Controller
 
         $meId = auth()->id();
 
+        // Membuka/menyegarkan ruang obrolan menandai pesan masuk sebagai dibaca.
+        $booking->messages()
+            ->where('sender_id', '!=', $meId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
         $messages = $booking->messages()
             ->orderBy('created_at')
             ->get()
@@ -60,5 +68,31 @@ class MessageController extends Controller
             ]);
 
         return response()->json(['messages' => $messages]);
+    }
+
+    /**
+     * Jumlah pesan belum dibaca untuk pengguna + pesan terbaru (toast/suara).
+     */
+    public function unreadCount()
+    {
+        $unread = Message::query()
+            ->where('is_read', false)
+            ->where('sender_id', '!=', auth()->id())
+            ->whereHas('booking', fn ($q) => $q->where('user_id', auth()->id()));
+
+        $count = (clone $unread)->count();
+        $latest = $unread->with('sender')->latest()->first();
+
+        return response()->json([
+            'count' => $count,
+            'latest' => $latest ? [
+                'id' => $latest->id,
+                'booking_id' => $latest->booking_id,
+                'sender_name' => $latest->sender->name,
+                'sender_avatar' => $latest->sender->profile_photo_url,
+                'snippet' => Str::limit($latest->message, 60),
+                'url' => route('user.bookings.show', $latest->booking_id),
+            ] : null,
+        ]);
     }
 }

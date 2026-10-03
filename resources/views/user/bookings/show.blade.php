@@ -115,7 +115,8 @@
          data-me-id="{{ auth()->id() }}"
          data-list-url="{{ route('user.messages.list', $booking->id) }}"
          data-me-avatar="{{ auth()->user()->profile_photo_url }}"
-         data-partner-avatar="{{ $booking->technician->user->profile_photo_url }}">
+         data-partner-avatar="{{ $booking->technician->user->profile_photo_url }}"
+         data-partner-label="Teknisi">
 
         {{-- Chat header: profil teknisi --}}
         <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-100 bg-white">

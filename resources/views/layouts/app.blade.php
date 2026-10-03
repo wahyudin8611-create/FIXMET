@@ -88,6 +88,7 @@
 @include('layouts.partials.footer')
 @auth
     @include('partials.echo')
+    @include('partials.notifications')
 @endauth
 @stack('scripts')
 </body>
