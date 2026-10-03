@@ -75,6 +75,32 @@ class MessageNotificationTest extends TestCase
         $this->getJson(route('technician.messages.unread'))->assertJsonPath('count', 0);
     }
 
+    public function test_message_is_still_sent_when_the_websocket_server_is_unreachable(): void
+    {
+        // Kondisi shared hosting: driver reverb aktif tapi tidak ada server.
+        config([
+            'broadcasting.default' => 'reverb',
+            'broadcasting.connections.reverb.key' => 'test-key',
+            'broadcasting.connections.reverb.secret' => 'test-secret',
+            'broadcasting.connections.reverb.app_id' => '1',
+            'broadcasting.connections.reverb.options.host' => '127.0.0.1',
+            'broadcasting.connections.reverb.options.port' => 1,
+            'broadcasting.connections.reverb.options.scheme' => 'http',
+            'broadcasting.connections.reverb.options.useTLS' => false,
+        ]);
+
+        $technician = $this->technician();
+        $user = User::factory()->create();
+        $booking = $this->booking($technician, $user);
+
+        $this->actingAs($user)
+            ->postJson(route('user.messages.send', $booking), ['message' => 'Halo teknisi'])
+            ->assertOk()
+            ->assertJsonPath('message', 'Halo teknisi');
+
+        $this->assertSame(1, $booking->messages()->count());
+    }
+
     public function test_user_also_has_an_unread_count_endpoint(): void
     {
         $technician = $this->technician();

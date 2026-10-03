@@ -32,14 +32,24 @@
 
 <div id="fm-toast-wrap" aria-live="polite" aria-atomic="true"></div>
 
+@php
+    // WebSocket hanya dipakai bila server Reverb dikonfigurasi. Di shared
+    // hosting (tanpa Reverb) chat & notifikasi berjalan lewat polling.
+    $realtime = config('broadcasting.default') === 'reverb'
+        && filled(config('broadcasting.connections.reverb.key'));
+@endphp
+@if($realtime)
 <script src="https://cdn.jsdelivr.net/npm/pusher-js@8.4.0/dist/web/pusher.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.17.1/dist/echo.iife.js"></script>
+@endif
 <script>
 (function () {
     const token = document.querySelector('meta[name="csrf-token"]')?.content;
 
     // --- Inisialisasi Echo (Reverb berbicara protokol Pusher) ---------------
-    try {
+    if (!@json($realtime)) {
+        window.Echo = undefined;
+    } else try {
         window.Pusher = Pusher;
         window.Echo = new Echo({
             broadcaster: 'pusher',

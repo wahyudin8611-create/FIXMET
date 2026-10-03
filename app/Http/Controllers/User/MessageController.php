@@ -31,7 +31,13 @@ class MessageController extends Controller
             'message' => $request->message,
         ]);
 
-        broadcast(new MessageSent($message, auth()->user()))->toOthers();
+        // Siaran real-time bersifat opsional: di hosting tanpa server Reverb,
+        // pesan tetap tersimpan dan sampai ke lawan bicara lewat polling.
+        try {
+            broadcast(new MessageSent($message, auth()->user()))->toOthers();
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
