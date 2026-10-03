@@ -1,0 +1,23 @@
+# Secrets and local-only files never go into the image
+.env
+.env.*
+!.env.example
+.git
+.claude
+vendor
+node_modules
+tests
+package-lock.json
+.phpunit.result.cache
+
+# Local database, uploads, caches and logs
+database/database.sqlite
+storage/app/public/*
+storage/app/private/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+bootstrap/cache/*.php
+public/storage
+public/hot
