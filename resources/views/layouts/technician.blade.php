@@ -97,6 +97,9 @@
         </main>
     </div>
 </div>
+@auth
+    @include('partials.echo')
+@endauth
 @stack('scripts')
 </body>
 </html>

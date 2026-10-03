@@ -86,6 +86,9 @@
 </main>
 
 @include('layouts.partials.footer')
+@auth
+    @include('partials.echo')
+@endauth
 @stack('scripts')
 </body>
 </html>

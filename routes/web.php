@@ -90,6 +90,7 @@ Route::middleware(['auth', 'role:technician'])->prefix('technician')->name('tech
 
     Route::get('/messages', [Technician\MessageController::class, 'index'])->name('messages.index');
     Route::post('/messages/{booking}', [Technician\MessageController::class, 'send'])->name('messages.send');
+    Route::get('/messages/{booking}/list', [Technician\MessageController::class, 'getMessages'])->name('messages.list');
 });
 
 // Admin routes
