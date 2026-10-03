@@ -1,6 +1,8 @@
 {{-- Live chat window (per-booking).
      Riwayat pesan dimuat sekali via REST (data-list-url); pesan baru + indikator
      mengetik dikirim real-time lewat WebSocket (Laravel Echo + Reverb).
+     Bila WebSocket tidak tersambung (mis. hosting tanpa server Reverb), pesan baru
+     diambil berkala dari data-list-url sebagai cadangan.
      Butuh elemen #chat dengan data-booking-id, data-list-url, data-me-avatar,
      data-partner-avatar, serta #chatBox, #chatForm, #chatInput, #chatSend. --}}
 <script>
@@ -50,30 +52,58 @@
         return el;
     }
 
+    // ID pesan yang sudah tampil, agar WebSocket dan polling tak menggandakan pesan.
+    const shown = new Set();
+
     function appendMessage(m) {
+        if (m.id !== undefined) {
+            if (shown.has(String(m.id))) return;
+            shown.add(String(m.id));
+        }
+        document.getElementById('chatEmpty')?.remove();
         const stick = nearBottom();
         hideTyping();
         box.appendChild(bubble(m));
         if (m.mine || stick) scrollBottom();
     }
 
+    async function fetchMessages() {
+        const res = await fetch(listUrl, { headers: { 'Accept': 'application/json' } });
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.messages || [];
+    }
+
     // ---- Riwayat awal (REST) ----------------------------------------------
     async function loadHistory() {
         try {
-            const res = await fetch(listUrl, { headers: { 'Accept': 'application/json' } });
-            if (!res.ok) return;
-            const data = await res.json();
-            const messages = data.messages || [];
+            const messages = await fetchMessages();
+            if (messages === null) return;
             if (loading) loading.remove();
             if (!messages.length) {
-                box.innerHTML = '<div class="text-center text-xs text-gray-400 py-10">Belum ada pesan. Mulai percakapan 👋</div>';
+                box.innerHTML = '<div id="chatEmpty" class="text-center text-xs text-gray-400 py-10">Belum ada pesan. Mulai percakapan 👋</div>';
                 return;
             }
             box.innerHTML = '';
-            messages.forEach((m) => box.appendChild(bubble(m)));
+            messages.forEach((m) => {
+                shown.add(String(m.id));
+                box.appendChild(bubble(m));
+            });
             scrollBottom();
         } catch (e) { /* diam */ }
     }
+
+    // ---- Cadangan: polling saat WebSocket tidak tersambung -----------------
+    const realtimeConnected = () =>
+        window.Echo?.connector?.pusher?.connection?.state === 'connected';
+
+    setInterval(async () => {
+        if (document.hidden || realtimeConnected()) return;
+        try {
+            const messages = await fetchMessages();
+            (messages || []).forEach((m) => appendMessage(m));
+        } catch (e) { /* coba lagi pada putaran berikutnya */ }
+    }, 4000);
 
     // ---- Indikator mengetik -----------------------------------------------
     let typingEl = null, typingHideTimer = null;
@@ -103,7 +133,7 @@
         channel.listen('.message.sent', (e) => {
             // Lewati bila ini pesan kita sendiri (jaga-jaga bila X-Socket-ID tak terkirim).
             if (String(e.sender_id) === String(meId)) return;
-            appendMessage({ message: e.message, mine: false, time: e.time });
+            appendMessage({ id: e.id, message: e.message, mine: false, time: e.time });
         });
 
         // Lawan bicara mengetik → tampilkan animasi.

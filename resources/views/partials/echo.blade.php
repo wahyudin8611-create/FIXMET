@@ -54,6 +54,9 @@
             auth: { headers: { 'X-CSRF-TOKEN': token } },
         });
     } catch (e) {
+        // The CDN script leaves the Echo class on window.Echo; clear it so the
+        // `if (window.Echo)` checks fall back to non-realtime behaviour.
+        window.Echo = undefined;
         console.warn('Echo gagal diinisialisasi:', e);
     }
 
