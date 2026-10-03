@@ -14,7 +14,7 @@ use App\Models\Solution;
 use App\Models\Symptom;
 use App\Models\Technician;
 use App\Models\User;
-use App\Services\ClaudeVisionClient;
+use App\Services\VisionModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -187,12 +187,12 @@ class GuestDiagnosisTest extends TestCase
         $this->assertSame('VivoBook 14', $consultation->device_model);
     }
 
-    public function test_device_the_ai_sees_but_fixmet_does_not_support_is_explained(): void
+    public function test_device_the_ai_sees_but_fixmate_does_not_support_is_explained(): void
     {
         $this->mockVisionResult(['device_id' => 0, 'device_label' => 'kulkas']);
 
         $this->post(route('diagnosis.store'), [...$this->validSubmission(), 'initial_complaint' => 'Tidak dingin lagi dan berisik'])
-            ->assertSessionHasErrors(['initial_complaint' => 'Perangkat Anda terlihat seperti kulkas, yang belum bisa didiagnosis otomatis oleh FIXMET. Silakan cari teknisi untuk pemeriksaan langsung.']);
+            ->assertSessionHasErrors(['initial_complaint' => 'Perangkat Anda terlihat seperti kulkas, yang belum bisa didiagnosis otomatis oleh FIXMATE. Silakan cari teknisi untuk pemeriksaan langsung.']);
 
         $this->assertDatabaseCount('consultations', 0);
     }
@@ -261,15 +261,14 @@ class GuestDiagnosisTest extends TestCase
 
     public function test_uploaded_photos_are_analysed_by_ai_and_the_evidence_is_stored(): void
     {
-        $this->mock(ClaudeVisionClient::class, function (MockInterface $mock): void {
+        $this->mock(VisionModel::class, function (MockInterface $mock): void {
             $mock->shouldReceive('isConfigured')->andReturnTrue();
             $mock->shouldReceive('analyze')
                 ->once()
-                ->withArgs(function (string $system, array $content, array $schema): bool {
-                    $text = collect($content)->firstWhere('type', 'text')['text'];
-
-                    return collect($content)->where('type', 'image')->count() === 1
-                        && collect($content)->firstWhere('type', 'image')['source']['mediaType'] === 'image/jpeg'
+                ->withArgs(function (string $system, array $images, string $text, array $schema): bool {
+                    return count($images) === 1
+                        && $images[0]['media_type'] === 'image/jpeg'
+                        && base64_decode($images[0]['data'], true) !== false
                         && str_contains($text, "device_id {$this->device->id}: Laptop (Laptop & Komputer)")
                         && str_contains($text, "symptom_id {$this->overheatSymptom->id}: Apakah laptop terasa sangat panas saat digunakan?")
                         && str_contains($text, '<complaint>Laptop cepat panas lalu mati sendiri.</complaint>');
@@ -303,7 +302,7 @@ class GuestDiagnosisTest extends TestCase
 
     public function test_diagnosis_continues_without_photo_evidence_when_ai_analysis_fails(): void
     {
-        $this->mock(ClaudeVisionClient::class, function (MockInterface $mock): void {
+        $this->mock(VisionModel::class, function (MockInterface $mock): void {
             $mock->shouldReceive('isConfigured')->andReturnTrue();
             $mock->shouldReceive('analyze')->once()->andReturnNull();
         });
@@ -556,7 +555,7 @@ class GuestDiagnosisTest extends TestCase
      */
     private function mockVisionResult(array $result): void
     {
-        $this->mock(ClaudeVisionClient::class, function (MockInterface $mock) use ($result): void {
+        $this->mock(VisionModel::class, function (MockInterface $mock) use ($result): void {
             $mock->shouldReceive('isConfigured')->andReturnTrue();
             $mock->shouldReceive('analyze')->once()->andReturn([
                 'device_label' => '',

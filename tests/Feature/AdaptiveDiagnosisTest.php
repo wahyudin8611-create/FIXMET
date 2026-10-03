@@ -10,7 +10,7 @@ use App\Models\Diagnosis;
 use App\Models\Rule;
 use App\Models\RuleSymptom;
 use App\Models\Symptom;
-use App\Services\ClaudeVisionClient;
+use App\Services\VisionModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -147,7 +147,7 @@ class AdaptiveDiagnosisTest extends TestCase
 
     public function test_clear_photo_findings_answer_questions_without_being_counted_twice(): void
     {
-        $this->mock(ClaudeVisionClient::class, function (MockInterface $mock): void {
+        $this->mock(VisionModel::class, function (MockInterface $mock): void {
             $mock->shouldReceive('isConfigured')->andReturnTrue();
             $mock->shouldReceive('analyze')->once()->andReturn([
                 'device_id' => $this->laptop->id,

@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Daftar sebagai Teknisi - FIXMET')
+@section('title', 'Daftar sebagai Teknisi - FIXMATE')
 @section('content')
 
 @push('styles')
@@ -32,7 +32,7 @@
                               d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/>
                     </svg>
                 </div>
-                <span class="font-bold text-gray-900 text-sm">FIXMET <span class="text-fm-primary">Teknisi</span></span>
+                <span class="font-bold text-gray-900 text-sm">FIXMATE <span class="text-fm-primary">Teknisi</span></span>
             </div>
         </div>
     </div>
@@ -73,7 +73,7 @@
             </div>
 
             <div class="mt-3">
-                <p class="text-sm text-gray-500" x-show="step === 1" x-cloak>Buat akun untuk mengakses platform FIXMET</p>
+                <p class="text-sm text-gray-500" x-show="step === 1" x-cloak>Buat akun untuk mengakses platform FIXMATE</p>
                 <p class="text-sm text-gray-500" x-show="step === 2" x-cloak>Informasi profesional untuk ditampilkan ke pelanggan</p>
                 <p class="text-sm text-gray-500" x-show="step === 3" x-cloak>Unggah dokumen verifikasi identitas dan keahlian</p>
             </div>
@@ -212,7 +212,7 @@
                 {{-- ═══ STEP 3: DOKUMEN ═══ --}}
                 <div x-show="step === 3" class="slide-enter" x-cloak>
                     <h2 class="text-xl font-bold text-gray-900 mb-1">Upload Dokumen Verifikasi</h2>
-                    <p class="text-gray-500 text-sm mb-2">Dokumen diperlukan untuk verifikasi oleh tim FIXMET</p>
+                    <p class="text-gray-500 text-sm mb-2">Dokumen diperlukan untuk verifikasi oleh tim FIXMATE</p>
 
                     <div class="p-3.5 mb-6 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-2.5">
                         <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>

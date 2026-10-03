@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Tentang FIXMET')
+@section('title', 'Tentang FIXMATE')
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 py-16">
 
@@ -9,7 +9,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-fm-primary animate-pulse"></span>
             <span class="eyebrow text-fm-primary">Tentang Kami</span>
         </div>
-        <h1 class="display-xl text-fm-dark mb-5" style="font-size:clamp(2.25rem,5vw,3rem);">Tentang FIXMET</h1>
+        <h1 class="display-xl text-fm-dark mb-5" style="font-size:clamp(2.25rem,5vw,3rem);">Tentang FIXMATE</h1>
         <p class="body-lg max-w-xl mx-auto">
             Platform diagnosis kerusakan perangkat berbasis foto dan sistem pakar yang menghubungkan pengguna dengan teknisi profesional terverifikasi.
         </p>
@@ -25,7 +25,7 @@
             </div>
             <h2 class="font-bold text-fm-dark mb-3" style="font-size:1.25rem;letter-spacing:-.02em;">Misi Kami</h2>
             <p class="body-md">
-                FIXMET hadir untuk menghubungkan pengguna dengan solusi perbaikan elektronik yang tepat, cepat, dan terpercaya.
+                FIXMATE hadir untuk menghubungkan pengguna dengan solusi perbaikan elektronik yang tepat, cepat, dan terpercaya.
                 Kami memanfaatkan sistem pakar untuk membantu mengidentifikasi kerusakan perangkat elektronik
                 dan menghubungkan pengguna dengan teknisi profesional terverifikasi.
             </p>
@@ -46,7 +46,7 @@
 
     {{-- Nilai-Nilai --}}
     <div class="bg-fm-primary/[.04] rounded-3xl p-8 sm:p-12 mb-16 border border-fm-primary/[.08]">
-        <h2 class="display-md text-fm-dark text-center mb-10" style="font-size:1.5rem;">Nilai-Nilai FIXMET</h2>
+        <h2 class="display-md text-fm-dark text-center mb-10" style="font-size:1.5rem;">Nilai-Nilai FIXMATE</h2>
         <div class="grid sm:grid-cols-3 gap-8">
             @foreach([
                 ['M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'Akurasi', 'Diagnosis berbasis data dan aturan pakar yang telah tervalidasi', '#3D8B7A'],
@@ -68,7 +68,7 @@
 
     {{-- Cara Kerja Singkat --}}
     <div class="bg-fm-dark rounded-3xl p-8 sm:p-12 mb-16">
-        <h2 class="display-md text-white text-center mb-10" style="font-size:1.5rem;">Bagaimana FIXMET Bekerja</h2>
+        <h2 class="display-md text-white text-center mb-10" style="font-size:1.5rem;">Bagaimana FIXMATE Bekerja</h2>
         <div class="grid sm:grid-cols-4 gap-6">
             @foreach([
                 ['01', 'Upload Foto', 'Ambil foto perangkat yang bermasalah dari berbagai sudut.'],
@@ -92,7 +92,7 @@
         <p class="text-fm-muted mb-6">Siap untuk mencoba?</p>
         <div class="flex flex-wrap justify-center gap-4">
             <a href="{{ route('register') }}" class="inline-flex items-center gap-2 bg-fm-primary text-white px-8 py-3.5 rounded-xl font-bold hover:bg-fm-primary-dark transition-all hover:-translate-y-0.5 hover:shadow-lg">
-                Mulai Gunakan FIXMET
+                Mulai Gunakan FIXMATE
             </a>
             <a href="{{ route('how-it-works') }}" class="inline-flex items-center gap-2 border-2 border-fm-primary text-fm-primary px-8 py-3.5 rounded-xl font-bold hover:bg-fm-primary/5 transition-colors">
                 Pelajari Lebih Lanjut

@@ -12,7 +12,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                     </div>
-                    <span class="font-extrabold text-fm-dark" style="font-size:1.125rem;letter-spacing:-.04em;">FIXMET</span>
+                    <span class="font-extrabold text-fm-dark" style="font-size:1.125rem;letter-spacing:-.04em;">FIXMATE</span>
                 </a>
                 <p class="max-w-xs mb-6" style="font-size:.875rem;line-height:1.75;color:#6B7280;">
                     Platform diagnosis kerusakan perangkat berbasis foto dan sistem pakar.
@@ -59,7 +59,7 @@
 
         <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
             <p class="text-fm-muted" style="font-size:.8125rem;">
-                &copy; {{ date('Y') }} FIXMET. Hak cipta dilindungi undang-undang.
+                &copy; {{ date('Y') }} FIXMATE. Hak cipta dilindungi undang-undang.
             </p>
             <p class="text-fm-muted max-w-md sm:text-right" style="font-size:.8125rem;line-height:1.65;">
                 <strong class="font-semibold">Disclaimer:</strong> Hasil diagnosis adalah kemungkinan berdasarkan foto dan gejala yang dilaporkan, bukan kepastian teknis. Untuk perangkat berisiko tinggi, selalu konsultasikan dengan teknisi berpengalaman.

@@ -31,7 +31,7 @@ class LandingController extends Controller
             [
                 'label'    => 'Sistem pakar yang transparan',
                 'title'    => 'Bukan kotak hitam. Setiap diagnosis punya alasan.',
-                'body'     => 'FIXMET menggunakan forward chaining — mencocokkan gejala dengan aturan diagnosis satu per satu. Setiap hasil dilengkapi tombol "Mengapa?" yang menampilkan jalur logika yang diambil sistem.',
+                'body'     => 'FIXMATE menggunakan forward chaining — mencocokkan gejala dengan aturan diagnosis satu per satu. Setiap hasil dilengkapi tombol "Mengapa?" yang menampilkan jalur logika yang diambil sistem.',
                 'note'     => 'Confidence score adalah tingkat kecocokan gejala, bukan jaminan kebenaran.',
                 'bg'       => 'gray',
                 'flip'     => true,

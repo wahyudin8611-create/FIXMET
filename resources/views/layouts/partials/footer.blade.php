@@ -12,7 +12,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                     </div>
-                    <span class="font-extrabold text-xl text-white tracking-tight">FIXMET</span>
+                    <span class="font-extrabold text-xl text-white tracking-tight">FIXMATE</span>
                 </div>
                 <p class="text-gray-400 text-sm leading-relaxed max-w-xs mb-5">
                     Platform diagnosis kerusakan perangkat berbasis foto dan sistem pakar. Diagnose. Repair. Connect.
@@ -50,7 +50,7 @@
         </div>
 
         <div class="pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p class="text-xs text-gray-600">&copy; {{ date('Y') }} FIXMET · Dibuat di Indonesia</p>
+            <p class="text-xs text-gray-600">&copy; {{ date('Y') }} FIXMATE · Dibuat di Indonesia</p>
             <div class="flex items-center gap-4">
                 <span class="text-xs text-gray-600">Teknologi Indonesia</span>
                 <div class="flex items-center gap-1.5">

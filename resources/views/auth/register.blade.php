@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Daftar FIXMET')
+@section('title', 'Daftar FIXMATE')
 @section('content')
 <div class="min-h-screen flex flex-col"
      style="background: linear-gradient(145deg, #f0f5f3 0%, #f5f6f3 50%, #f2f5f0 100%);">
@@ -24,7 +24,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
             </div>
-            <span class="font-bold text-gray-900 text-lg group-hover:text-fm-primary transition-colors">FIXMET</span>
+            <span class="font-bold text-gray-900 text-lg group-hover:text-fm-primary transition-colors">FIXMATE</span>
         </a>
         <a href="{{ route('login') }}"
            class="text-sm text-gray-500 hover:text-gray-900 transition-colors">
@@ -180,7 +180,7 @@
         <p class="mt-8 text-center text-xs text-gray-400 max-w-sm">
             Dengan mendaftar, Anda menyetujui
             <span class="text-gray-600 font-medium">Syarat & Ketentuan</span> dan
-            <span class="text-gray-600 font-medium">Kebijakan Privasi</span> FIXMET.
+            <span class="text-gray-600 font-medium">Kebijakan Privasi</span> FIXMATE.
         </p>
     </div>
 </div>

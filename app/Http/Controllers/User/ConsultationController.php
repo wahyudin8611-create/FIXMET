@@ -292,7 +292,7 @@ class ConsultationController extends Controller
     private function unrecognizedDeviceMessage(string $detectedLabel): string
     {
         if ($detectedLabel !== '') {
-            return "Perangkat Anda terlihat seperti {$detectedLabel}, yang belum bisa didiagnosis otomatis oleh FIXMET. Silakan cari teknisi untuk pemeriksaan langsung.";
+            return "Perangkat Anda terlihat seperti {$detectedLabel}, yang belum bisa didiagnosis otomatis oleh FIXMATE. Silakan cari teknisi untuk pemeriksaan langsung.";
         }
 
         $supported = Device::orderBy('name')->pluck('name')->implode(', ');

@@ -83,7 +83,7 @@
                             <div class="w-2.5 h-2.5 rounded-full bg-yellow-400/60"></div>
                             <div class="w-2.5 h-2.5 rounded-full bg-green-400/60"></div>
                         </div>
-                        <span class="text-[11px] text-white/25 font-mono">fixmet.id/diagnosis</span>
+                        <span class="text-[11px] text-white/25 font-mono">fixmate.id/diagnosis</span>
                         <div class="w-14"></div>
                     </div>
 

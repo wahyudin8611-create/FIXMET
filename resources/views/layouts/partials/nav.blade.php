@@ -16,7 +16,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
                 </div>
-                <span class="font-extrabold text-lg tracking-tight text-fm-dark">FIXMET</span>
+                <span class="font-extrabold text-lg tracking-tight text-fm-dark">FIXMATE</span>
             </a>
 
             {{-- Desktop nav --}}

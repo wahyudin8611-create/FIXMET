@@ -7,7 +7,7 @@
             <p class="eyebrow text-fm-primary mb-4">Platform</p>
             <h2 id="stats-heading" class="display-lg text-fm-dark"
                 style="font-size: clamp(1.875rem, 4vw, 3rem);">
-                FIXMET dalam angka
+                FIXMATE dalam angka
             </h2>
         </div>
 

@@ -31,7 +31,7 @@ class ImageAnalysisService
     private const IMAGE_QUALITIES = ['clear', 'unclear', 'unrelated'];
 
     private const VISION_SYSTEM_PROMPT = <<<'PROMPT'
-        You are the visual-inspection component of FIXMET, an expert system that diagnoses damage in household electronics and appliances. Users do not tell you the device category, brand or model; they only upload photos and describe the problem in their own words. You receive those photos, the complaint, and the list of supported devices with the symptoms the expert system asks about for each.
+        You are the visual-inspection component of FIXMATE, an expert system that diagnoses damage in household electronics and appliances. Users do not tell you the device category, brand or model; they only upload photos and describe the problem in their own words. You receive those photos, the complaint, and the list of supported devices with the symptoms the expert system asks about for each.
 
         First identify the device:
         - device_id: the id of the supported device shown in the photos and described in the complaint. Use 0 when the device is not in the list or you cannot tell.
@@ -79,7 +79,7 @@ class ImageAnalysisService
         ],
     ];
 
-    public function __construct(private ClaudeVisionClient $vision) {}
+    public function __construct(private VisionModel $vision) {}
 
     public function validateImage(UploadedFile $file): array
     {
@@ -130,24 +130,18 @@ class ImageAnalysisService
 
         $devices = Device::with('category', 'symptoms')->get();
 
-        $content = [];
-        foreach ($imagePaths as $path) {
-            $encoded = $this->encodeForVision($path);
-            if ($encoded !== null) {
-                $content[] = [
-                    'type' => 'image',
-                    'source' => ['type' => 'base64', 'mediaType' => $encoded['media_type'], 'data' => $encoded['data']],
-                ];
-            }
-        }
+        $images = array_values(array_filter(array_map(fn (string $path) => $this->encodeForVision($path), $imagePaths)));
 
-        if ($content === []) {
+        if ($images === []) {
             return null;
         }
 
-        $content[] = ['type' => 'text', 'text' => $this->describeCase($complaint, $devices)];
-
-        $result = $this->vision->analyze(self::VISION_SYSTEM_PROMPT, $content, self::VISION_SCHEMA);
+        $result = $this->vision->analyze(
+            self::VISION_SYSTEM_PROMPT,
+            $images,
+            $this->describeCase($complaint, $devices),
+            self::VISION_SCHEMA,
+        );
 
         return $result === null ? null : $this->sanitizeEvidence($result, $devices);
     }

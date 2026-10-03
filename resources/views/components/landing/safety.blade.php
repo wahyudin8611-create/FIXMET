@@ -8,7 +8,7 @@
                 Aman dulu,<br>baru diperbaiki.
             </h2>
             <p class="max-w-lg mx-auto" style="font-size:1.125rem;line-height:1.75;color:rgba(255,255,255,.5);">
-                Setiap diagnosis dilengkapi label risiko. FIXMET tidak mendorong kamu
+                Setiap diagnosis dilengkapi label risiko. FIXMATE tidak mendorong kamu
                 memperbaiki sesuatu yang berbahaya sendirian.
             </p>
         </div>
@@ -42,7 +42,7 @@
 
         <p class="text-center mt-10 reveal max-w-xl mx-auto" style="font-size:.8125rem;line-height:1.65;color:rgba(255,255,255,.22);">
             Untuk perangkat dengan risiko yang melibatkan gas, listrik tegangan tinggi, baterai lithium, atau kendaraan,
-            FIXMET secara default menyarankan teknisi terverifikasi.
+            FIXMATE secara default menyarankan teknisi terverifikasi.
         </p>
 
     </div>

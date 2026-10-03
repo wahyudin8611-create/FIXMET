@@ -1,7 +1,7 @@
 @props(['features'])
 
 {{-- Features strip: 4 icons in a row like Maverick --}}
-<section id="layanan" class="bg-white border-b border-black/[.04]" aria-label="Keunggulan FIXMET">
+<section id="layanan" class="bg-white border-b border-black/[.04]" aria-label="Keunggulan FIXMATE">
     <div class="max-w-7xl mx-auto px-5 sm:px-8 py-16 lg:py-20">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
             @php
@@ -29,7 +29,7 @@
 </section>
 
 {{-- Detailed feature sections --}}
-<div aria-label="Fitur detail FIXMET">
+<div aria-label="Fitur detail FIXMATE">
 @foreach($features as $i => $feature)
 @php
     $bgMap = ['white' => '#FFFFFF', 'gray' => '#F5F6F3', 'dark' => '#1A2332'];

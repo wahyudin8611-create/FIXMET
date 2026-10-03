@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Daftar sebagai Pengguna - FIXMET')
+@section('title', 'Daftar sebagai Pengguna - FIXMATE')
 @section('content')
 <div class="min-h-screen flex" x-data="{ showPass: false, showConfirm: false }">
 
@@ -199,7 +199,7 @@
                     <button type="submit" class="btn-primary w-full py-3.5 text-white font-bold rounded-xl shadow-lg text-sm" style="box-shadow: 0 8px 20px rgba(61,139,122,0.2);">
                         Buat Akun Sekarang &rarr;
                     </button>
-                    <p class="text-center text-xs text-gray-400 mt-3">Dengan mendaftar, Anda menyetujui syarat & ketentuan FIXMET.</p>
+                    <p class="text-center text-xs text-gray-400 mt-3">Dengan mendaftar, Anda menyetujui syarat & ketentuan FIXMATE.</p>
                 </div>
             </form>
 

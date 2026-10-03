@@ -9,26 +9,24 @@ use Illuminate\Support\Facades\Log;
 /**
  * Thin boundary around the Claude Messages API for structured image analysis.
  */
-class ClaudeVisionClient
+class ClaudeVisionClient implements VisionModel
 {
     public function isConfigured(): bool
     {
         return filled(config('services.anthropic.key'));
     }
 
-    /**
-     * Send images and instructions to Claude and return the JSON object it
-     * produced, or null when the request fails or is declined.
-     *
-     * @param  list<array<string, mixed>>  $content  user message content blocks (images + text)
-     * @param  array<string, mixed>  $schema  JSON schema the response must follow
-     * @return array<string, mixed>|null
-     */
-    public function analyze(string $system, array $content, array $schema): ?array
+    public function analyze(string $system, array $images, string $text, array $schema): ?array
     {
         if (! $this->isConfigured()) {
             return null;
         }
+
+        $content = array_map(fn (array $image) => [
+            'type' => 'image',
+            'source' => ['type' => 'base64', 'mediaType' => $image['media_type'], 'data' => $image['data']],
+        ], $images);
+        $content[] = ['type' => 'text', 'text' => $text];
 
         $timeout = (float) config('services.anthropic.timeout');
 

@@ -1,5 +1,5 @@
 {{--
-    Line icon set used across FIXMET instead of emoji.
+    Line icon set used across FIXMATE instead of emoji.
     Usage: <x-icon name="wrench" class="w-4 h-4 text-fm-primary" />
 --}}
 @props(['name'])

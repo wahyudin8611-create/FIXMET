@@ -1,8 +1,8 @@
 @extends('layouts.landing')
 
-@section('title', 'FIXMET — Foto Masalahnya, Temukan Solusinya, Hubungi Teknisi')
-@section('description', 'FIXMET menggabungkan analisis visual dan sistem pakar untuk menemukan kemungkinan kerusakan perangkatmu, lalu memandu perbaikan atau menghubungkanmu dengan teknisi terverifikasi.')
-@section('og_title', 'FIXMET — Diagnose. Repair. Connect.')
+@section('title', 'FIXMATE — Foto Masalahnya, Temukan Solusinya, Hubungi Teknisi')
+@section('description', 'FIXMATE menggabungkan analisis visual dan sistem pakar untuk menemukan kemungkinan kerusakan perangkatmu, lalu memandu perbaikan atau menghubungkanmu dengan teknisi terverifikasi.')
+@section('og_title', 'FIXMATE — Diagnose. Repair. Connect.')
 @section('og_description', 'Diagnosis kerusakan perangkat berbasis foto. Sistem pakar transparan. Teknisi terverifikasi.')
 
 @section('content')

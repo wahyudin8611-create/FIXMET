@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Cara Kerja FIXMET')
+@section('title', 'Cara Kerja FIXMATE')
 @section('content')
 <div class="max-w-5xl mx-auto px-4 sm:px-6 py-16">
 
@@ -9,7 +9,7 @@
             <span class="w-1.5 h-1.5 rounded-full bg-fm-primary animate-pulse"></span>
             <span class="eyebrow text-fm-primary">Cara Kerja</span>
         </div>
-        <h1 class="display-xl text-fm-dark mb-5" style="font-size:clamp(2.25rem,5vw,3rem);">Cara Kerja FIXMET</h1>
+        <h1 class="display-xl text-fm-dark mb-5" style="font-size:clamp(2.25rem,5vw,3rem);">Cara Kerja FIXMATE</h1>
         <p class="body-lg max-w-xl mx-auto">Dari diagnosis hingga teknisi tiba di depan pintu Anda</p>
     </div>
 
@@ -37,7 +37,7 @@
 
     {{-- Keunggulan --}}
     <div class="bg-fm-primary/[.04] rounded-3xl p-8 sm:p-12 mb-16 border border-fm-primary/[.08]">
-        <h2 class="display-md text-fm-dark text-center mb-8" style="font-size:1.5rem;">Keunggulan Sistem Pakar FIXMET</h2>
+        <h2 class="display-md text-fm-dark text-center mb-8" style="font-size:1.5rem;">Keunggulan Sistem Pakar FIXMATE</h2>
         <div class="grid md:grid-cols-2 gap-6">
             @foreach([
                 ['Forward Chaining', 'Proses penalaran dari fakta (gejala) menuju kesimpulan (diagnosis), sama seperti cara dokter mendiagnosis pasien.'],

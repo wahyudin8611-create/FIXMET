@@ -348,7 +348,7 @@
                     Siap mendiagnosa<br>perangkat Anda?
                 </h2>
                 <p class="max-w-md mx-auto mb-9" style="font-size:1.125rem;line-height:1.75;color:#94a3b8;">
-                    Bergabung dengan ribuan pengguna yang sudah mempercayakan diagnosis elektronik mereka ke FIXMET.
+                    Bergabung dengan ribuan pengguna yang sudah mempercayakan diagnosis elektronik mereka ke FIXMATE.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-3 justify-center">
                     @guest

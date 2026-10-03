@@ -1,5 +1,5 @@
 @extends('layouts.auth')
-@section('title', 'Masuk ke FIXMET')
+@section('title', 'Masuk ke FIXMATE')
 @section('content')
 <div class="min-h-screen flex" x-data="{ showPass: false }">
 
@@ -30,7 +30,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                     </svg>
                 </div>
-                <span class="text-white font-bold text-xl tracking-tight group-hover:text-emerald-300 transition-colors">FIXMET</span>
+                <span class="text-white font-bold text-xl tracking-tight group-hover:text-emerald-300 transition-colors">FIXMATE</span>
             </a>
         </div>
 
@@ -70,7 +70,7 @@
 
         {{-- Footer --}}
         <div class="relative z-10">
-            <p class="text-slate-700 text-xs">&copy; 2024 FIXMET &middot; Teknologi Indonesia</p>
+            <p class="text-slate-700 text-xs">&copy; 2024 FIXMATE &middot; Teknologi Indonesia</p>
         </div>
     </div>
 
@@ -88,14 +88,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
                     </div>
-                    <span class="font-bold text-gray-900">FIXMET</span>
+                    <span class="font-bold text-gray-900">FIXMATE</span>
                 </a>
             </div>
 
             {{-- Heading --}}
             <div class="mb-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-1">Selamat datang kembali</h2>
-                <p class="text-gray-500 text-sm">Masuk ke akun FIXMET Anda untuk melanjutkan</p>
+                <p class="text-gray-500 text-sm">Masuk ke akun FIXMATE Anda untuk melanjutkan</p>
             </div>
 
             {{-- Errors --}}

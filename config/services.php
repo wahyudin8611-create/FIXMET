@@ -35,6 +35,21 @@ return [
         ],
     ],
 
+    /*
+     * Photo analysis provider: "gemini" (Google, has a free tier) or "anthropic" (Claude).
+     */
+    'ai' => [
+        'provider' => env('AI_PROVIDER', 'gemini'),
+    ],
+
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-3.8-flash'),
+        'fallback_model' => env('GEMINI_FALLBACK_MODEL', 'gemini-3.5-flash-lite'),
+        'thinking_level' => env('GEMINI_THINKING_LEVEL', 'low'),
+        'timeout' => (int) env('GEMINI_TIMEOUT', 45),
+    ],
+
     'anthropic' => [
         'key' => env('ANTHROPIC_API_KEY'),
         'model' => env('ANTHROPIC_MODEL', 'claude-opus-5-5'),

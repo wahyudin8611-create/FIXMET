@@ -10,7 +10,7 @@
                 <p class="eyebrow text-fm-primary mb-4">Teknisi Terverifikasi</p>
                 <h2 id="tech-heading" class="display-lg text-fm-dark"
                     style="font-size: clamp(1.875rem, 4vw, 3rem);">
-                    Rasakan perbedaan FIXMET
+                    Rasakan perbedaan FIXMATE
                 </h2>
                 <p class="body-lg mt-4">Pengalaman nyata dari pengguna yang mengandalkan kami.</p>
             </div>
@@ -48,9 +48,9 @@
                 <p class="text-fm-dark mb-6" style="font-size:.9375rem;line-height:1.75;letter-spacing:-.005em;">
                     @php
                         $reviews = [
-                            'AC kantor tiba-tiba mati total. Pakai FIXMET, dalam 5 menit dapat diagnosis yang jelas — kompresor bermasalah. Langsung booking teknisi dari app, besoknya sudah beres.',
+                            'AC kantor tiba-tiba mati total. Pakai FIXMATE, dalam 5 menit dapat diagnosis yang jelas — kompresor bermasalah. Langsung booking teknisi dari app, besoknya sudah beres.',
                             'Laptop sering overheat dan tiba-tiba mati. Upload foto motherboard, sistem langsung kasih tahu kipas internal perlu diganti. Panduan perbaikannya detail banget.',
-                            'Kulkas bunyi keras tengah malam. Diagnosis bilang bearing kipas aus. Teknisi dari FIXMET datang tepat waktu, tarif sesuai estimasi. Sangat recommended!',
+                            'Kulkas bunyi keras tengah malam. Diagnosis bilang bearing kipas aus. Teknisi dari FIXMATE datang tepat waktu, tarif sesuai estimasi. Sangat recommended!',
                         ];
                     @endphp
                     {{ $reviews[$idx] ?? 'Pelayanan sangat baik dan diagnosis akurat.' }}
