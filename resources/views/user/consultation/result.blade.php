@@ -3,7 +3,11 @@
 @section('content')
 <div class="max-w-3xl mx-auto px-4 py-8">
     <div class="mb-4">
-        <a href="{{ route('user.dashboard') }}" class="text-sm text-gray-500 hover:text-primary-600">&larr; Dashboard</a>
+        @if(auth()->user()?->isUser())
+            <a href="{{ route('user.dashboard') }}" class="text-sm text-gray-500 hover:text-primary-600">&larr; Dashboard</a>
+        @else
+            <a href="{{ route('diagnosis.create') }}" class="text-sm text-gray-500 hover:text-primary-600">&larr; Diagnosis baru</a>
+        @endif
     </div>
 
     @if($consultation->isGuest() && auth()->guest())

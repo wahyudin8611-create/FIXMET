@@ -2,7 +2,7 @@
 @section('title', 'Edit Panduan')
 @section('page-title', 'Edit Panduan Perbaikan')
 @section('content')
-<div class="max-w-3xl" x-data="{ steps: @json($guide->steps->map(fn($s) => ['id' => $s->id, 'step_number' => $s->step_number, 'title' => $s->title, 'description' => $s->description, 'warning' => $s->warning ?? ''])) }">
+<div class="max-w-3xl" x-data="{ steps: {{ Js::from($guide->steps->map(fn ($s) => ['id' => $s->id, 'step_number' => $s->step_number, 'title' => $s->title, 'description' => $s->description, 'warning' => $s->warning ?? ''])) }} }">
     <form action="{{ route('admin.repair-guides.update', $guide->id) }}" method="POST" class="space-y-4">
         @csrf @method('PUT')
 
