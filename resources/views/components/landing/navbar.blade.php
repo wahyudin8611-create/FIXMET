@@ -32,20 +32,20 @@
         <div class="flex items-center justify-between h-16">
 
             {{-- Logo --}}
-            <a href="{{ route('home') }}" class="flex items-center gap-2.5" aria-label="FIXMATE beranda">
+            <a href="{{ route('home') }}" class="flex items-center gap-2.5 shrink-0" aria-label="FIXMATE beranda">
                 <x-logo-mark class="w-9 h-9" />
                 <span class="font-extrabold text-fm-dark" style="font-size:1.25rem;letter-spacing:-.04em;">FIX<span class="text-fm-primary">MATE</span></span>
             </a>
 
             {{-- Desktop nav --}}
-            <div class="hidden lg:flex items-center gap-5 xl:gap-8">
+            <div class="hidden lg:flex flex-1 justify-center items-center gap-5 xl:gap-8 px-4">
                 @foreach([['#layanan','Layanan'],['#cara-kerja','Cara Kerja'],['#etalase','Perangkat'],['#teknisi','Teknisi'],['about','Tentang']] as [$href, $label])
                 <a href="{{ str_starts_with($href, '#') ? $href : route($href) }}" class="text-fm-muted hover:text-fm-dark transition-colors duration-200 font-medium" style="font-size:.875rem;letter-spacing:-.005em;">{{ $label }}</a>
                 @endforeach
             </div>
 
             {{-- Desktop buttons --}}
-            <div class="hidden lg:flex items-center gap-3">
+            <div class="hidden lg:flex items-center gap-3 shrink-0">
                 @auth
                 @include('layouts.partials.dashboard-button')
                 <a href="{{ route('diagnosis.create') }}" class="btn-primary text-sm py-2.5 px-5">Mulai Diagnosis</a>
