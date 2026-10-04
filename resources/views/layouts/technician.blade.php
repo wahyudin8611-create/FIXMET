@@ -64,12 +64,12 @@
             <a href="{{ route('technician.dashboard') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('technician.dashboard') ? 'bg-fm-primary/10 text-fm-primary font-medium' : 'text-gray-700' }}"><x-icon name="home" class="w-4 h-4 shrink-0" /> Dashboard</a>
             <a href="{{ route('technician.requests') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('technician.requests') ? 'bg-fm-primary/10 text-fm-primary font-medium' : 'text-gray-700' }}">
                 <x-icon name="inbox" class="w-4 h-4 shrink-0" /> Permintaan Baru
-                <span id="navRequests" class="hidden ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-none items-center justify-center">0</span>
+                <span id="navRequests" data-badge="requests" class="hidden ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-none items-center justify-center">0</span>
             </a>
             <a href="{{ route('technician.bookings.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700"><x-icon name="clipboard-list" class="w-4 h-4 shrink-0" /> Booking</a>
             <a href="{{ route('technician.messages.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 {{ request()->routeIs('technician.messages.*') ? 'bg-fm-primary/10 text-fm-primary font-medium' : 'text-gray-700' }}">
                 <x-icon name="chat" class="w-4 h-4 shrink-0" /> Pesan
-                <span id="navUnread" class="hidden ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-none items-center justify-center">0</span>
+                <span id="navUnread" data-badge="messages" class="hidden ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-none items-center justify-center">0</span>
             </a>
             <a href="{{ route('technician.profile.edit') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700"><x-icon name="user" class="w-4 h-4 shrink-0" /> Profil</a>
         </nav>

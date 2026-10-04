@@ -61,10 +61,13 @@
             {{-- Mobile hamburger --}}
             <button
                 @click="open = !open"
-                class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl text-fm-dark hover:bg-fm-light transition-colors"
+                class="lg:hidden relative w-10 h-10 flex items-center justify-center rounded-xl text-fm-dark hover:bg-fm-light transition-colors"
                 :aria-expanded="open.toString()"
                 aria-label="Buka menu navigasi"
             >
+                @auth
+                <span data-badge="messages" data-badge-dot class="hidden absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white" aria-label="Ada pesan belum dibaca"></span>
+                @endauth
                 <svg x-show="!open" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
@@ -96,6 +99,12 @@
             @auth
             <p class="text-xs text-fm-muted">Masuk sebagai <span class="font-semibold text-fm-dark">{{ auth()->user()->name }}</span></p>
             <a href="{{ auth()->user()->dashboardUrl() }}" class="btn-outline text-sm text-center">Dashboard</a>
+            @unless(auth()->user()->isAdmin())
+            <a href="{{ route(auth()->user()->isTechnician() ? 'technician.messages.index' : 'user.messages.index') }}" class="btn-outline text-sm text-center gap-2">
+                Pesan
+                <span data-badge="messages" class="hidden min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-none items-center justify-center">0</span>
+            </a>
+            @endunless
             @else
             <a href="{{ route('login') }}" class="btn-outline text-sm text-center">Masuk</a>
             @endauth

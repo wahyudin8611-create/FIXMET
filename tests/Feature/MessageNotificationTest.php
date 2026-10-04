@@ -133,6 +133,22 @@ class MessageNotificationTest extends TestCase
             ->assertDontSee('id="chatForm"', false);
     }
 
+    public function test_home_page_watches_for_new_messages_for_signed_in_users(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->get(route('home'))
+            ->assertOk()
+            ->assertSee(json_encode(route('user.messages.unread')), false)
+            ->assertSee('data-badge="messages"', false);
+    }
+
+    public function test_home_page_does_not_poll_messages_for_guests(): void
+    {
+        $this->get(route('home'))
+            ->assertOk()
+            ->assertDontSee('data-badge="messages"', false);
+    }
+
     public function test_technician_sidebar_has_a_badge_for_new_booking_requests(): void
     {
         $this->actingAs($this->technician()->user)

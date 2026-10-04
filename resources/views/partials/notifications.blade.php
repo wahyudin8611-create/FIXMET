@@ -20,18 +20,17 @@
     let lastMaxId = 0;
     let primed = false;           // cegah toast untuk histori saat pertama load
 
-    // --- Badge sidebar (#navUnread = pesan, #navRequests = booking baru) ----
-    function setBadge(n, id = 'navUnread') {
-        const b = document.getElementById(id);
-        if (!b) return;
-        if (n > 0) {
+    // --- Badge (data-badge="messages" = pesan, "requests" = booking baru) ----
+    // Bisa ada di beberapa tempat sekaligus: sidebar, foto profil, menu, ikon
+    // menu HP. Elemen ber-data-badge-dot hanya berupa titik tanpa angka.
+    function setBadge(n, key = 'messages') {
+        document.querySelectorAll('[data-badge="' + key + '"]').forEach((b) => {
+            const show = n > 0;
+            b.classList.toggle('hidden', !show);
+            if (b.hasAttribute('data-badge-dot')) return;
             b.textContent = n > 99 ? '99+' : String(n);
-            b.classList.remove('hidden');
-            b.classList.add('inline-flex');
-        } else {
-            b.classList.add('hidden');
-            b.classList.remove('inline-flex');
-        }
+            b.classList.toggle('inline-flex', show);
+        });
     }
 
     // --- Suara notifikasi (WebAudio, tanpa file aset) -----------------------
@@ -84,8 +83,8 @@
             const res = await fetch(UNREAD_URL, { headers: { 'Accept': 'application/json' } });
             if (!res.ok) return;
             const data = await res.json();
-            setBadge(data.count || 0);
-            if (data.pending_bookings !== undefined) setBadge(data.pending_bookings, 'navRequests');
+            setBadge(data.count || 0, 'messages');
+            if (data.pending_bookings !== undefined) setBadge(data.pending_bookings, 'requests');
 
             const latest = data.latest;
             if (latest) {

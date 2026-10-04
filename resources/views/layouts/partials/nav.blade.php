@@ -89,6 +89,12 @@
             <a href="{{ auth()->user()->dashboardUrl() }}" class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold text-fm-primary hover:bg-fm-light">
                 <x-icon name="home" class="w-4 h-4" /> Dashboard
             </a>
+            @unless(auth()->user()->isAdmin())
+            <a href="{{ route(auth()->user()->isTechnician() ? 'technician.messages.index' : 'user.messages.index') }}" class="flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-fm-text hover:bg-fm-light">
+                <x-icon name="chat" class="w-4 h-4" /> Pesan
+                <span data-badge="messages" class="hidden ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-none items-center justify-center">0</span>
+            </a>
+            @endunless
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 transition-colors">Keluar</button>

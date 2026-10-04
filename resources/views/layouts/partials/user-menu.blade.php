@@ -12,6 +12,7 @@
                  @elseif(auth()->user()->isTechnician()) bg-emerald-500
                  @else bg-fm-primary @endif">
             </div>
+            <span data-badge="messages" class="hidden absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-red-500 text-white text-[10px] font-bold leading-none items-center justify-center ring-2 ring-white" aria-label="Pesan belum dibaca">0</span>
         </div>
         <div class="hidden md:block text-left">
             <p class="text-xs font-bold text-fm-dark leading-none">{{ Str::words(auth()->user()->name, 1, '') }}</p>
@@ -94,6 +95,15 @@
                     Edit Profil
                 </a>
             @endif
+            @unless(auth()->user()->isAdmin())
+                <a href="{{ route(auth()->user()->isTechnician() ? 'technician.messages.index' : 'user.messages.index') }}" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-fm-text hover:bg-fm-light transition-colors group">
+                    <div class="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center group-hover:bg-sky-100 transition-colors">
+                        <x-icon name="chat" class="w-3.5 h-3.5 text-sky-600" />
+                    </div>
+                    Pesan
+                    <span data-badge="messages" class="hidden ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[11px] font-bold leading-none items-center justify-center">0</span>
+                </a>
+            @endunless
         </div>
 
         <div class="border-t border-gray-50 py-1.5">

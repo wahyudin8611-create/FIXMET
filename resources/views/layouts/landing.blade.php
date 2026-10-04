@@ -178,6 +178,10 @@
         document.querySelectorAll('[data-count-up]').forEach(function(el) { countObs.observe(el); });
     })();
     </script>
+    @auth
+        @include('partials.echo')
+        @include('partials.notifications')
+    @endauth
     @stack('scripts')
 </body>
 </html>
