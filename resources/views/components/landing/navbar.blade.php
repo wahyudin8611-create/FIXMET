@@ -38,7 +38,7 @@
             </a>
 
             {{-- Desktop nav --}}
-            <div class="hidden lg:flex items-center gap-8">
+            <div class="hidden lg:flex items-center gap-5 xl:gap-8">
                 @foreach([['#layanan','Layanan'],['#cara-kerja','Cara Kerja'],['#etalase','Perangkat'],['#teknisi','Teknisi'],['about','Tentang']] as [$href, $label])
                 <a href="{{ str_starts_with($href, '#') ? $href : route($href) }}" class="text-fm-muted hover:text-fm-dark transition-colors duration-200 font-medium" style="font-size:.875rem;letter-spacing:-.005em;">{{ $label }}</a>
                 @endforeach
@@ -47,18 +47,13 @@
             {{-- Desktop buttons --}}
             <div class="hidden lg:flex items-center gap-3">
                 @auth
-                <a href="{{ auth()->user()->dashboardUrl() }}" class="flex items-center gap-2 text-fm-dark hover:text-fm-primary font-semibold transition-colors" style="font-size:.875rem;letter-spacing:-.005em;" title="Buka dashboard">
-                    <img src="{{ auth()->user()->profile_photo_url }}" class="w-8 h-8 rounded-lg object-cover ring-2 ring-gray-100" alt="">
-                    {{ Str::words(auth()->user()->name, 1, '') }}
-                </a>
+                @include('layouts.partials.dashboard-button')
+                <a href="{{ route('diagnosis.create') }}" class="btn-primary text-sm py-2.5 px-5">Mulai Diagnosis</a>
+                @include('layouts.partials.user-menu')
                 @else
                 <a href="{{ route('login') }}" class="text-fm-dark hover:text-fm-primary font-semibold transition-colors" style="font-size:.875rem;letter-spacing:-.005em;">
                     Masuk
                 </a>
-                @endauth
-                @auth
-                <a href="{{ route('diagnosis.create') }}" class="btn-primary text-sm py-2.5 px-5">Mulai Diagnosis</a>
-                @else
                 <a href="{{ route('diagnosis.create') }}" class="btn-primary text-sm py-2.5 px-5">Mulai Diagnosis</a>
                 @endauth
             </div>
@@ -99,11 +94,18 @@
         </div>
         <div class="flex flex-col gap-2.5 pt-4 border-t border-black/[.06]">
             @auth
+            <p class="text-xs text-fm-muted">Masuk sebagai <span class="font-semibold text-fm-dark">{{ auth()->user()->name }}</span></p>
             <a href="{{ auth()->user()->dashboardUrl() }}" class="btn-outline text-sm text-center">Dashboard</a>
             @else
             <a href="{{ route('login') }}" class="btn-outline text-sm text-center">Masuk</a>
             @endauth
             <a href="{{ route('diagnosis.create') }}" class="btn-primary text-sm text-center">Mulai Diagnosis</a>
+            @auth
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="w-full py-2.5 text-sm font-semibold text-red-600 rounded-xl hover:bg-red-50 transition-colors">Keluar</button>
+            </form>
+            @endauth
         </div>
     </div>
 </nav>

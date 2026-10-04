@@ -81,6 +81,25 @@ class SiteFlowTest extends TestCase
             ->assertSee('href="'.route('technician.dashboard').'"', false);
     }
 
+    public function test_every_role_can_reach_their_dashboard_and_sign_out_from_public_pages(): void
+    {
+        $accounts = [
+            'user.dashboard' => User::factory()->create(),
+            'technician.dashboard' => User::factory()->technician()->create(),
+            'admin.dashboard' => $this->admin(),
+        ];
+
+        foreach ($accounts as $dashboardRoute => $account) {
+            foreach (['home', 'technicians.index'] as $page) {
+                $this->actingAs($account)
+                    ->get(route($page))
+                    ->assertOk()
+                    ->assertSee('href="'.route($dashboardRoute).'"', false)
+                    ->assertSee('action="'.route('logout').'"', false);
+            }
+        }
+    }
+
     public function test_admin_can_open_the_repair_guide_edit_page(): void
     {
         $category = Category::create(['name' => 'Smartphone']);
