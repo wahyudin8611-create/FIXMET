@@ -20,9 +20,9 @@
     let lastMaxId = 0;
     let primed = false;           // cegah toast untuk histori saat pertama load
 
-    // --- Badge sidebar ------------------------------------------------------
-    function setBadge(n) {
-        const b = document.getElementById('navUnread');
+    // --- Badge sidebar (#navUnread = pesan, #navRequests = booking baru) ----
+    function setBadge(n, id = 'navUnread') {
+        const b = document.getElementById(id);
         if (!b) return;
         if (n > 0) {
             b.textContent = n > 99 ? '99+' : String(n);
@@ -85,6 +85,7 @@
             if (!res.ok) return;
             const data = await res.json();
             setBadge(data.count || 0);
+            if (data.pending_bookings !== undefined) setBadge(data.pending_bookings, 'navRequests');
 
             const latest = data.latest;
             if (latest) {

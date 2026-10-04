@@ -57,6 +57,53 @@ class MessageNotificationTest extends TestCase
             ->assertJsonPath('latest.booking_id', $booking->id);
     }
 
+    public function test_unread_count_includes_only_this_technicians_pending_booking_requests(): void
+    {
+        $technician = $this->technician();
+        $user = User::factory()->create();
+
+        $this->booking($technician, $user)->update(['status' => 'pending']);
+        $this->booking($technician, $user)->update(['status' => 'pending']);
+        $this->booking($technician, $user); // sudah diterima
+        $this->booking($this->technician(), $user)->update(['status' => 'pending']); // teknisi lain
+
+        $this->actingAs($technician->user)
+            ->getJson(route('technician.messages.unread'))
+            ->assertOk()
+            ->assertJsonPath('pending_bookings', 2);
+    }
+
+    public function test_message_list_marks_conversations_with_unread_messages(): void
+    {
+        $technician = $this->technician();
+        $user = User::factory()->create();
+        $unread = $this->booking($technician, $user);
+        $read = $this->booking($technician, $user);
+
+        $unread->messages()->create(['sender_id' => $user->id, 'message' => 'Pesan baru']);
+        $unread->messages()->create(['sender_id' => $user->id, 'message' => 'Halo lagi']);
+        $read->messages()->create(['sender_id' => $user->id, 'message' => 'Sudah dibaca', 'is_read' => true]);
+
+        $this->actingAs($technician->user)
+            ->get(route('technician.messages.index'))
+            ->assertOk()
+            ->assertSee('2 pesan belum dibaca')
+            ->assertDontSee('1 pesan belum dibaca');
+
+        $this->actingAs($user)
+            ->get(route('user.messages.index'))
+            ->assertOk()
+            ->assertDontSee('pesan belum dibaca');
+    }
+
+    public function test_technician_sidebar_has_a_badge_for_new_booking_requests(): void
+    {
+        $this->actingAs($this->technician()->user)
+            ->get(route('technician.dashboard'))
+            ->assertOk()
+            ->assertSee('id="navRequests"', false);
+    }
+
     public function test_opening_the_chat_marks_messages_read_and_clears_the_badge(): void
     {
         $technician = $this->technician();

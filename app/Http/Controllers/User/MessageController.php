@@ -7,22 +7,28 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\Message;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class MessageController extends Controller
 {
     use AuthorizesRequests;
+
     public function index()
     {
         $bookings = Booking::with(['technician.user', 'messages'])
+            ->withCount(['messages as unread_count' => fn ($query) => $query
+                ->where('is_read', false)
+                ->where('sender_id', '!=', auth()->id())])
             ->where('user_id', auth()->id())
             ->whereIn('status', ['accepted', 'scheduled', 'in_progress', 'completed'])
             ->latest()
             ->get();
+
         return view('user.messages.index', compact('bookings'));
     }
 
-    public function send(\Illuminate\Http\Request $request, Booking $booking)
+    public function send(Request $request, Booking $booking)
     {
         $this->authorize('view', $booking);
         $request->validate(['message' => 'required|string|max:1000']);

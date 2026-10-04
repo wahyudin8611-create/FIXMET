@@ -15,10 +15,14 @@ class MessageController extends Controller
     {
         $technician = auth()->user()->technician;
         $bookings = Booking::with(['user', 'messages'])
+            ->withCount(['messages as unread_count' => fn ($query) => $query
+                ->where('is_read', false)
+                ->where('sender_id', '!=', auth()->id())])
             ->where('technician_id', $technician->id)
             ->whereIn('status', ['accepted', 'scheduled', 'in_progress', 'completed'])
             ->latest()
             ->get();
+
         return view('technician.messages.index', compact('bookings'));
     }
 
@@ -79,14 +83,15 @@ class MessageController extends Controller
 
     /**
      * Jumlah pesan belum dibaca untuk teknisi + pesan terbaru (untuk badge
-     * sidebar, toast, dan suara notifikasi).
+     * sidebar, toast, dan suara notifikasi), serta jumlah permintaan booking
+     * yang belum dijawab untuk badge "Permintaan Baru".
      */
     public function unreadCount()
     {
         $technicianId = auth()->user()->technician?->id;
 
         if (! $technicianId) {
-            return response()->json(['count' => 0, 'latest' => null]);
+            return response()->json(['count' => 0, 'latest' => null, 'pending_bookings' => 0]);
         }
 
         $unread = Message::query()
@@ -107,6 +112,7 @@ class MessageController extends Controller
                 'snippet' => Str::limit($latest->message, 60),
                 'url' => route('technician.bookings.show', $latest->booking_id),
             ] : null,
+            'pending_bookings' => Booking::where('technician_id', $technicianId)->where('status', 'pending')->count(),
         ]);
     }
 
