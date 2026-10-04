@@ -13,6 +13,17 @@
         @csrf @method('PUT')
 
         <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
+            <h2 class="font-semibold text-gray-900">Informasi Akun</h2>
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap <span class="text-red-500">*</span></label>
+                <input type="text" id="name" name="name" value="{{ old('name', auth()->user()->name) }}" required maxlength="100"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 @error('name') border-red-500 @enderror">
+                @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                <p class="text-xs text-gray-400 mt-1">Nama ini dilihat pengguna di daftar teknisi, booking, dan chat.</p>
+            </div>
+        </div>
+
+        <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-4">
             <h2 class="font-semibold text-gray-900">Informasi Profesional</h2>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Spesialisasi <span class="text-red-500">*</span></label>

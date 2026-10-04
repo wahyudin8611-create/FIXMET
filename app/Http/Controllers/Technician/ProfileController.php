@@ -5,13 +5,13 @@ namespace App\Http\Controllers\Technician;
 use App\Http\Controllers\Controller;
 use App\Models\Technician;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     public function edit()
     {
-        $technician = auth()->user()->technician ?? new Technician();
+        $technician = auth()->user()->technician ?? new Technician;
+
         return view('technician.profile.edit', compact('technician'));
     }
 
@@ -20,6 +20,7 @@ class ProfileController extends Controller
         $user = auth()->user();
 
         $request->validate([
+            'name' => ['required', 'string', 'max:100'],
             'specialization' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'service_fee' => ['required', 'numeric', 'min:0'],
@@ -34,7 +35,7 @@ class ProfileController extends Controller
 
         foreach (['certificate', 'identity_card', 'skill_evidence'] as $doc) {
             if ($request->hasFile($doc)) {
-                $path = $request->file($doc)->store('technicians/' . $doc, 'public');
+                $path = $request->file($doc)->store('technicians/'.$doc, 'public');
                 $data[$doc] = $path;
             }
         }
@@ -44,11 +45,15 @@ class ProfileController extends Controller
             array_merge($data, ['user_id' => $user->id])
         );
 
+        $user->update(['name' => $request->name]);
+
         // Update user role if needed
         if ($user->role !== 'technician') {
             $user->update(['role' => 'technician']);
         }
 
-        return back()->with('success', 'Profil teknisi berhasil disimpan. Menunggu verifikasi admin.');
+        return back()->with('success', $technician->is_verified
+            ? 'Profil teknisi berhasil disimpan.'
+            : 'Profil teknisi berhasil disimpan. Menunggu verifikasi admin.');
     }
 }
