@@ -96,6 +96,43 @@ class MessageNotificationTest extends TestCase
             ->assertDontSee('pesan belum dibaca');
     }
 
+    public function test_both_sides_of_a_booking_show_the_same_chat_window(): void
+    {
+        $technician = $this->technician();
+        $user = User::factory()->create();
+        $booking = $this->booking($technician, $user);
+
+        $this->actingAs($technician->user)
+            ->get(route('technician.bookings.show', $booking))
+            ->assertOk()
+            ->assertSee('id="chatForm"', false)
+            ->assertSee('Pengguna · '.$booking->booking_code);
+
+        $this->actingAs($user)
+            ->get(route('user.bookings.show', $booking))
+            ->assertOk()
+            ->assertSee('id="chatForm"', false)
+            ->assertSee('Teknisi · '.$booking->booking_code);
+    }
+
+    public function test_chat_stays_closed_on_both_sides_while_the_booking_is_pending(): void
+    {
+        $technician = $this->technician();
+        $user = User::factory()->create();
+        $booking = $this->booking($technician, $user);
+        $booking->update(['status' => 'pending']);
+
+        $this->actingAs($technician->user)
+            ->get(route('technician.bookings.show', $booking))
+            ->assertOk()
+            ->assertDontSee('id="chatForm"', false);
+
+        $this->actingAs($user)
+            ->get(route('user.bookings.show', $booking))
+            ->assertOk()
+            ->assertDontSee('id="chatForm"', false);
+    }
+
     public function test_technician_sidebar_has_a_badge_for_new_booking_requests(): void
     {
         $this->actingAs($this->technician()->user)

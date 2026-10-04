@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Booking extends Model
 {
+    /**
+     * Statuses in which the user and technician can chat.
+     *
+     * @var list<string>
+     */
+    public const CHAT_STATUSES = ['accepted', 'scheduled', 'in_progress', 'completed'];
+
     protected $fillable = [
         'user_id', 'technician_id', 'consultation_id', 'booking_code',
         'service_date', 'service_time', 'service_address', 'problem_description',
@@ -18,6 +25,11 @@ class Booking extends Model
             'service_date' => 'date',
             'estimated_fee' => 'decimal:2',
         ];
+    }
+
+    public function chatIsOpen(): bool
+    {
+        return in_array($this->status, self::CHAT_STATUSES, true);
     }
 
     public function user()
@@ -52,7 +64,7 @@ class Booking extends Model
 
     public function getStatusLabelAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'Menunggu',
             'accepted' => 'Diterima',
             'rejected' => 'Ditolak',
@@ -66,7 +78,7 @@ class Booking extends Model
 
     public function getStatusColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'pending' => 'yellow',
             'accepted' => 'blue',
             'rejected' => 'red',

@@ -19,7 +19,7 @@ class MessageController extends Controller
                 ->where('is_read', false)
                 ->where('sender_id', '!=', auth()->id())])
             ->where('technician_id', $technician->id)
-            ->whereIn('status', ['accepted', 'scheduled', 'in_progress', 'completed'])
+            ->whereIn('status', Booking::CHAT_STATUSES)
             ->latest()
             ->get();
 
